@@ -1,0 +1,18 @@
+---
+title: "MB5370 Marine Genomics - Workshop 1"
+author: "Katie Dyck"
+date: "2026-07-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r connect to GitHub, include=FALSE}
+# Enter in the R terminal window:
+
+# git config --global user.email "you@example.com"
+# git config --global user.name "Your Name"
+```
+
