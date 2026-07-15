@@ -28,6 +28,17 @@ format:
 ## Background
 
 Black Band Disease (BBD)
+- causes tissue loss in scleractinian coral species
+- identifiable by a black band surrounding an area where tissue has been lost
+- sulfur-reducing bacteria
+- anoxic environment created next to coral tissue
+- 4 main components: cyanobacteria, sulfur-reducing bacteria, sulfur-oxidizing bacteria, and heterotrophs (only cyanobacteria and sulfur-reducing bacteria are directly involved in pathobiology)
+  + Cyanobacteria is the most dominant taxa. It is what gives the coral its dark colour. 10 known strains; most common is *Roseofilum reptotaenium*. 
+https://cdhc.noaa.gov/coral-disease/characterized-diseases/black-band-disease/
+
+The data used in this workshop is a subset from fresh BBD samples from infected *Acropora hyacynthus* individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer. 
+
+From this subset of data we are going to try to generate a metagenome assembly. We will analyse the BBD metagenome. 
 
 ## Processing Log
 
@@ -108,7 +119,7 @@ We want to find the number of the largest contig in the BBD assembly. We have to
 cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | sort -n
 ```
 
-**The largest contig is 119 (4,706,701 bp).**
+* The largest contig is 119 (4,706,701 bp).
 
 ```{bash, eval=FALSE, echo=FALSE}
 mkdir bins_bbd
@@ -122,7 +133,7 @@ samtools faidx ../flye/bbd/assembly.fasta contig_119 > bins_bbd/contig_119.fa
 
 #!/bin/bash
 #SBATCH --time=60
-#SBATCH --ntasks=6 --mem=10gb
+#SBATCH --ntasks=6 --mem=40gb
 
 echo "Starting checkm in $(pwd) at $(date)"
 
@@ -185,7 +196,7 @@ Now we will run the classification workflow. We've created a shell script inside
 ```{bash run_gtdbtk shell script, eval=FALSE, echo=FALSE}
 #!/bin/bash
 #SBATCH --time=60
-#SBATCH --ntasks=2 --mem=24gb
+#SBATCH --ntasks=2 --mem=40gb
 
 echo "Starting gtdbtk in $(pwd) at $(date)"
 
@@ -196,4 +207,17 @@ gtdbtk classify_wf -x fa --cpus 2 --genome_dir genomes --out_dir out --skip_ani_
 
 echo "Finished gtdbtk in $(pwd) at $(date)"
 ```
+
+```{r gtdbtk results, eval=FALSE}
+library(tidyverse)
+
+gtdbtk_result <- read_tsv("../gtdbtk.bac120.summary.tsv")
+```
+
+### Step 6: Find and annotate genes with prokka
+
+For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program [Prokka](https://github.com/tseemann/prokka) will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar. 
+
+We will create a `prokka` directory within our main project directory to save our work from this step.
+
 
