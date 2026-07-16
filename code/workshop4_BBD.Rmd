@@ -2,7 +2,7 @@
 title: "MB5370 Marine Genomics - Workshop 4"
 subtitle: "Black Band Disease"
 author: "Katie Dyck"
-date: 13/07/2026
+date: 15/07/2026
 format:
   html:
       embed-resources: true
@@ -44,7 +44,8 @@ From this subset of data we are going to try to generate a metagenome assembly. 
 
 ### Step 1: Assembly
 
-Make a new directory, `flye`, inside the main project directory and change into it.
+All outputs from this step will be saved inside a directory called `flye`, located in the main project directory.
+
 
 ```{bash flye directory, eval=FALSE, echo=FALSE}
 mkdir flye
@@ -58,7 +59,7 @@ Make a symbolic link to the BBD read data by entering the following line into th
 ln -s /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .
 ```
 
-Create a new shell script, "run_flye_bbd.sh", inside the `flye` directory with the appropriate code.
+Create a new shell script, `run_flye_bbd.sh`, inside the `flye` directory with the appropriate code. Submit the job for this script.
 
 ```{bash run_flye_bbd.sh code, eval=FALSE, echo=FALSE}
 #!/bin/bash
@@ -72,8 +73,6 @@ flye --nano-hq ../raw_data/bbd_0.1.fastq.gz --threads 12 --out-dir bbd --meta
 echo "Finished flye bbd in $(pwd) at $(date)"
 ```
 
-Submit the job for this shell script.
-
 ```{bash submit job, eval=FALSE}
 sbatch run_flye_bbd.sh
 
@@ -82,23 +81,19 @@ sbatch run_flye_bbd.sh
 
 ### Step 2: Binning with metabat
 
-1.  Create a new directory, "metabat", in the main directory and change into it.
+1.  All outputs from this step will be saved inside a directory called `metabat`, located in the main project directory.
 2.  Extract depth information.
 3.  Reorder the contigs based on depth.
-4.  Run metabat
+4.  Run metabat.
 
-```{bash binning, eval=FALSE, echo=FALSE}
-cd ~/Marine-Genomics
-mkdir metabat
-cd metabat
-
-# extract depth information
+```{bash binning, eval=FALSE}
+# Extract depth information
 cat ../flye/bbd/assembly_info.txt  | grep -v '#' | awk '{OFS="\t";print $1,$3}' > depths_bbd.txt
 
-# reorder contigs based on depth
+# Reorder contigs based on depth
 cat depths_bbd.txt | awk '{print $1}' | xargs samtools faidx ../flye/bbd/assembly.fasta > assembly_bbd_ordered.fasta
 
-# run metabat
+# Run metabat
 metabat2 -i assembly_bbd_ordered.fasta -a depths_bbd.txt --cvExt -o bins_bbd/metabat --seed 5
 ```
 
@@ -106,31 +101,27 @@ The output from running metabat was: <span style="font-family: 'Courier New', Co
 
 ### Step 3: Check bin quality with checkm
 
-```{bash, eval=FALSE, echo=FALSE}
-cd ~/Marine-Genomics
-mkdir checkm
-cd checkm
-```
+All outputs from this step will be saved inside a directory called `checkm`, located in the main project directory.
 
 We want to find the number of the largest contig in the BBD assembly. We have to add this contig manually because it usually isn't included in the bins from metabat.
 
 ```{bash, eval=FALSE, echo=FALSE}
-# display lengths of all contigs in ascending order
+# Display lengths of all contigs in ascending order
 cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | sort -n
 ```
 
-* The largest contig is 119 (4,706,701 bp).
+* The largest contig in our assembly is #119 (4,706,701 bp).
 
-```{bash, eval=FALSE, echo=FALSE}
-mkdir bins_bbd
+Within the `checkm` folder, create a new directory called `bins_bbd`.
+
+```{bash, eval=FALSE}
 cp ../metabat/bins_bbd/*.fa bins_bbd/
 samtools faidx ../flye/bbd/assembly.fasta contig_119 > bins_bbd/contig_119.fa
 ```
 
-```{bash run_checkm slurm script, eval=FALSE, echo=FALSE}
-# SAVE IN THE CHECKM DIRECTORY AS "run_checkm_bbd.sh"
+Create a new slurm script, `run_checkm_bbd.sh`, and save it in the `checkm` directory. Submit the job through the terminal.
 
-
+```{bash run_checkm_bbd slurm script, eval=FALSE, echo=FALSE}
 #!/bin/bash
 #SBATCH --time=60
 #SBATCH --ntasks=6 --mem=40gb
@@ -145,10 +136,6 @@ checkm lineage_wf bins_bbd out -t 4 -x fa -f checkm_results_bbd.txt
 echo "Finished checkm in $(pwd) at $(date)"
 ```
 
-```{bash, echo=FALSE, eval=FALSE}
-sbatch run_checkm_bbd.sh
-```
-
 ### Functional Analysis of the BBD Metagenome
 
 For the functional analysis of metagenomes, the overall goal is to answer two questions:
@@ -160,18 +147,18 @@ To begin our functional analysis, we use the BBD assembly that we have generated
 
 ### Step 4: Select bins based on checkm results
 
-The results of the checkm bin quality check are saved in the text file `checkm_results_bbd.txt`, inside our checkm directory.
+The results of the checkm bin quality check can be found in the text file `checkm_results_bbd.txt`, which is saved inside the checkm directory.
 
 We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the "Completeness" column in `checkm_results_bbd.txt` to assess these results. We will focus on bins with a completeness greater than 15%.
 
 ```{bash, eval=FALSE}
 cat checkm_results_bbd.txt | awk '$13>15'
 
-# We are only concerned with the bin ID
+# We are only concerned with the bin ID column
 cat checkm_results_bbd.txt | awk '$13>15{print $1}'
 ```
 
-We will save the output of the terminal commands above to a file so we can continue using it in our analysis.
+Save the output of the terminal commands above to a file, `bbd_topbins.txt`, so we can continue using it in our analysis:
 
 ```{bash, eval=FALSE}
 cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
@@ -179,19 +166,19 @@ cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
 
 ### Step 5: Perform taxonomic classification with gtdbtk
 
-We will create a new folder called `gtdbtk` in the top level of our project directory. All files generated in this step will be saved in it.
+All outputs from this step will be saved inside a directory called `gtdbtk`, located in the main project directory.
 
-* We'll create a subfolder within the `gtdbtk` folder called `genomes`. Here we will save a copy of each of the top bins identified above.
+* We'll create a subfolder within the `gtdbtk` folder called `genomes`. Here we will save a copy of each of the top bins identified in step 4. 
 
 ```{bash, eval=FALSE}
 # Iterate over our list of top bins
-# For each one we want to copy a file corresponding to that bin into the `genomes` folder
+# For each bin we want to copy a file corresponding to that bin into the `genomes` folder
 while read bin;do echo $bin;done < ../checkm/bbd_topbins.txt
 while read bin;do echo "../metabat/bins_bbd/${bin}.fa";done < ../checkm/bbd_topbins.txt
 while read bin;do cp "../metabat/bins_bbd/${bin}.fa" genomes;done < ../checkm/bbd_topbins.txt
 ```
 
-Now we will run the classification workflow. We've created a shell script inside the `gtdbtk` folder called `run_gtdbtk.sh` that we will run in the terminal.
+Now we will run the classification workflow. Create a shell script inside the `gtdbtk` folder called `run_gtdbtk.sh` and submit it through the terminal.
 
 ```{bash run_gtdbtk shell script, eval=FALSE, echo=FALSE}
 #!/bin/bash
@@ -211,13 +198,95 @@ echo "Finished gtdbtk in $(pwd) at $(date)"
 ```{r gtdbtk results, eval=FALSE}
 library(tidyverse)
 
-gtdbtk_result <- read_tsv("../gtdbtk.bac120.summary.tsv")
+gtdbtk_result <- read_tsv("../gtdbtk/out/gtdbtk.bac120.summary.tsv")
+head(gtdbtk_result)
 ```
 
 ### Step 6: Find and annotate genes with prokka
 
 For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program [Prokka](https://github.com/tseemann/prokka) will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar. 
 
-We will create a `prokka` directory within our main project directory to save our work from this step.
+All outputs from this step will be saved inside a directory called `prokka`, located in the main project directory.
 
+First, we want to run prokka for a single bin. Identify the first bin ID from `bbd_topbins.txt`, then run the following code through the terminal:
 
+```{bash, eval=FALSE}
+bin=contig_119
+prokka --outdir $bin --prefix $bin  ../metabat/bins_bbd/${bin}.fa
+```
+
+Running this creates a folder `contig_119`, which contains the output file `contig_119.tsv` with the name of each gene and its name and functional information.
+
+Create a blank shell script called `run_prokka.sh` in the `prokka` directory with the appropriate code. Run the job through the terminal.
+
+```{bash run_prokka shell script, eval=FALSE, echo=FALSE}
+#!/bin/bash
+#SBATCH --time=60
+#SBATCH --ntasks=2 --mem=2gb
+
+echo "Starting prokka in $(pwd) at $(date)"
+
+shopt -s expand_aliases
+alias prokka='apptainer run -B /pvol/:/pvol /pvol/data/sif/prokka.sif prokka'
+
+while read bin;do 
+  prokka --outdir $bin --prefix $bin "../metabat/bins_bbd/${bin}.fa";
+done < ../checkm/bbd_topbins.txt
+
+echo "Finished prokka in $(pwd) at $(date)"
+```
+
+```{bash, eval=FALSE}
+# Output file is named "slurm-603.out"
+```
+
+### Step 8: Infer metabolic pathways
+
+To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool [minpath](https://omics.informatics.indiana.edu/MinPath/). We will run this on each genome in our analysis. 
+
+All outputs from this step will be saved inside a directory called `minpath`, located in the main project directory.
+
+We will use the `contig_119.tsv` file to prepare inputs for minpath. Within this file:
+
+- *EC_number* is Enzyme Commission number (e.g. 2.5.1.41)
+- *COG* is Clustes of Orthologous Genes (e.g. COG1646)
+- *product* is the protein name (e.g. Geranylgeranylglyceryl phosphate synthase)
+
+We are only interested in lines with an EC number. This output is saved in the file `contig_119.ec`. We run minpath on this file by entering this command in the terminal:
+
+```{bash, eval=FALSE}
+minpath -ec contig_119.ec -report contig_119.ec.report -details contig_119.ec.details
+```
+
+In the `contig_119.ec.report`:
+
+- *PWY-7321* is a pathway identifier in the metacyc database. It can be used to look up the full pathway (E.g. [PWY-7321](https://biocyc.org/pathway?orgid=META&id=PWY-7321))
+- *fam0 4* tells us four gene families are involved in ths=is pathway
+- *fam-found 2* tells us we found two gene families from the pathway in this genome
+- *name ecdysteroid metabolism (arthropods)* is the pathway name
+
+Run the following code in the terminal (once the prokka job is finished running) to prepare minpath inputs for each bin:
+
+```{bash prep minpath inputs, eval=FALSE}
+while read bin;do 
+  cat ../prokka/$bin/${bin}.tsv | awk -F '\t' '$5{printf("%s\t%s\n", $1,$5)}' | grep -v '^locus' > ${bin}.ec 
+done < ../checkm/bbd_topbins.txt
+```
+
+Next, run the code below in the terminal to run minpath on every bin:
+
+```{bash run minpath on bins, eval=FALSE}
+while read bin;do 
+  minpath -ec ${bin}.ec -report ${bin}.ec.report -details ${bin}.ec.details
+done < ../checkm/bbd_topbins.txt
+```
+
+Two pathways from the output are of interest to us.
+
+1. **Photosynthesis light reactions** (metacyc code `PWY-101`) - this includes all the components necessary for photosynthesis that take place in light, Photosystem I, and Photosystem II. 
+
+```{bash search photosynthesis, eval=FALSE}
+grep 'PWY-101' *.ec.report
+```
+
++ `PWY-101` is found in contig_119, metabat.27, metabat.48, and metabat.50.
