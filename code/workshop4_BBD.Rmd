@@ -2,15 +2,15 @@
 title: "MB5370 Marine Genomics - Workshop 4"
 subtitle: "Black Band Disease"
 author: "Katie Dyck"
-date: 15/07/2026
+date: 2026-07-15
 format:
   html:
+      css: styles.css
       embed-resources: true
       code-fold: show
       code-copy: hover
       code-block-bg: true
       code-block-border-left: "grey25"
-      code-overflow: wrap
       toc: true
       number-sections: true
       number-depth: 4
@@ -25,27 +25,48 @@ format:
       fig-cap-location: bottom
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ## Background
 
-Black Band Disease (BBD)
-- causes tissue loss in scleractinian coral species
-- identifiable by a black band surrounding an area where tissue has been lost
-- sulfur-reducing bacteria
-- anoxic environment created next to coral tissue
-- 4 main components: cyanobacteria, sulfur-reducing bacteria, sulfur-oxidizing bacteria, and heterotrophs (only cyanobacteria and sulfur-reducing bacteria are directly involved in pathobiology)
-  + Cyanobacteria is the most dominant taxa. It is what gives the coral its dark colour. 10 known strains; most common is *Roseofilum reptotaenium*. 
-https://cdhc.noaa.gov/coral-disease/characterized-diseases/black-band-disease/
+### What is Black Band Disease? Why should we care about it?
 
-The data used in this workshop is a subset from fresh BBD samples from infected *Acropora hyacynthus* individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer. 
+Black Band Disease (BBD) is an infectious polymicrobial disease that impacts several coral species. It is identifiable by a dark band (black or dark red in colour) 1mm to several cm wide that surrounds a pale-coloured area where coral tissue has been lost. Depending on environmental conditions, the disease can spread from 1mm to 1cm per day until an entire coral colony is affected. The disease was discovered by Alfred Antonius in 1973 in Belize. Since then, the disease has been reported in shallow coral reefs throughout the Caribbean, the Indo-Pacific, the Red Sea, and the Great Barrier Reef. The fact that BBD continues to become more (rather than less) prevalent is cause for concern. Researchers have linked its increased prevalence to human activity and rising global temperatures. Reef-building corals - those that are of greatest importance to maintaining reef health - are most impacted by BBD.
 
-From this subset of data we are going to try to generate a metagenome assembly. We will analyse the BBD metagenome. 
+### What do we know about the organisms that make up Black Band Disease and the taxonomic groups represented?
+
+While researchers originally though it was caused by a single pathogen, it's now understood that BBD is is actually a complex microbial consortium that creates an anoxic, highly toxic (sulfur-rich) microenvironment coral tissue cannot survive in. There are 4 main taxonomic groups present in the consortium: *cyanobacteria*, *sulfate-reducing bacteria*, *sulfur-oxidising bacteria*, and *heterotrophs*.
+
+1.  **Cyanobacteria** is the most prevalent taxa in the consortium. It's what causes the distinct dark-coloured band around lost tissue. They have multiple functions, including photosynthesis, carbon fixation, stabilisation of the microbial mat through production of extracellular polymeric substances (EPS), and oxygen production during the daytime. At night, when respiration exceeds photosynthesis, the mat becomes anoxic and tissue death occurs. While there are multiple strains of cyanobacteria associated with BBD, the most common is *Roseofilum reptotaenium*.
+2.  **Sulfate-reducing bacteria**, present in the lower, oxygen-depleted regions of the microbial mat, are responsible for consuming oxygen, reducing sulfates, and generating hydrogen sulfide (one of the agents responsible for the death of coral tissue). Any tissue immediately below the dark band experience hypoxia, sulfide poisioning, and, eventually, death. $$\text{organic matter} + {SO}_4^{2-} \text{ (sulfate)} \rightarrow {CO}_2 + H_2S \text{ (hydrogen sulfide)}$$
+3.  **Sulfur-oxidising bacteria** is present where there is both oxygen and sulfide. The bacteria oxidises hydrogen sulfide back into sulfur compounds: $$H_2S \rightarrow S^O \text{ (elemental sulfur)} \rightarrow {SO}_4^{2-}$$ Sulfides are not completely eliminated: substrates used by sulfate reducers are continuously regenerated, keeping sulfur cycling (and the death of affected coral tissue) going.
+4.  **Heterotrophs** are responsible for the degradation of coral mucus (important for protection and removal of sediments), breakdown of coral tissue cell membranes, and dissolved organic matter. All of these activities contribute to nutrient recycling, the release of carbon substrates, and the production of electrons used by sulfate reducers.
+
+Other taxonomic groups present include archaea, fungi, and other eukaryotic microbes.
+
+There are distinct vertical environmental gradients within a BBD microbial mat.
+
+-   At the *surface* is a large amount of light, oxygen (during the daytime), and cyanobacteria.
+-   In the *middle* is the transition zone, which has sulfur-oxidising bacteria.
+-   The *bottom* is an anoxic, sulfide-rich zone dominated by sulfate reducers. At night, photosynthesis stops, oxygen quickly disappears, and sulfide concentrations quickly increase.
+
+### What are the gaps in our knowledge of BBD that could be addressed through an improved meta genome assembly?
+
+
+
+### About the data
+
+The data used in this workshop is a subset from fresh BBD samples from infected *Acropora hyacynthus* individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer.
+
+From this subset of data we are going to try to generate a metagenome assembly. We will analyse the BBD metagenome.
 
 ## Processing Log
 
 ### Step 1: Assembly
 
 All outputs from this step will be saved inside a directory called `flye`, located in the main project directory.
-
 
 ```{bash flye directory, eval=FALSE, echo=FALSE}
 mkdir flye
@@ -97,7 +118,7 @@ cat depths_bbd.txt | awk '{print $1}' | xargs samtools faidx ../flye/bbd/assembl
 metabat2 -i assembly_bbd_ordered.fasta -a depths_bbd.txt --cvExt -o bins_bbd/metabat --seed 5
 ```
 
-The output from running metabat was: <span style="font-family: 'Courier New', Courier, monospace;">**67 bins (39299051 bases in total) formed**</span>
+The output from running metabat was: [**67 bins (39299051 bases in total) formed**]{style="font-family: 'Courier New', Courier, monospace;"}
 
 ### Step 3: Check bin quality with checkm
 
@@ -110,7 +131,7 @@ We want to find the number of the largest contig in the BBD assembly. We have to
 cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | sort -n
 ```
 
-* The largest contig in our assembly is #119 (4,706,701 bp).
+-   The largest contig in our assembly is #119 (4,706,701 bp).
 
 Within the `checkm` folder, create a new directory called `bins_bbd`.
 
@@ -159,7 +180,7 @@ cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
 
 All outputs from this step will be saved inside a directory called `gtdbtk`, located in the main project directory.
 
-* We'll create a subfolder within the `gtdbtk` folder called `genomes`. Here we will save a copy of each of the top bins identified in step 4. 
+-   We'll create a subfolder within the `gtdbtk` folder called `genomes`. Here we will save a copy of each of the top bins identified in step 4.
 
 ```{bash, eval=FALSE}
 # Iterate over our list of top bins
@@ -190,7 +211,7 @@ The output of this file is saved in `gtdbtk.bac120.summary.tsv`.
 
 ### Step 6: Find and annotate genes with prokka
 
-For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program [Prokka](https://github.com/tseemann/prokka) will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar. 
+For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program [Prokka](https://github.com/tseemann/prokka) will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar.
 
 All outputs from this step will be saved inside a directory called `prokka`, located in the main project directory.
 
@@ -228,15 +249,15 @@ echo "Finished prokka in $(pwd) at $(date)"
 
 ### Step 8: Infer metabolic pathways
 
-To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool [minpath](https://omics.informatics.indiana.edu/MinPath/). We will run this on each genome in our analysis. 
+To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool [minpath](https://omics.informatics.indiana.edu/MinPath/). We will run this on each genome in our analysis.
 
 All outputs from this step will be saved inside a directory called `minpath`, located in the main project directory.
 
 We will use the `contig_119.tsv` file to prepare inputs for minpath. Within this file:
 
-- *EC_number* is Enzyme Commission number (e.g. 2.5.1.41)
-- *COG* is Clustes of Orthologous Genes (e.g. COG1646)
-- *product* is the protein name (e.g. Geranylgeranylglyceryl phosphate synthase)
+-   *EC_number* is Enzyme Commission number (e.g. 2.5.1.41)
+-   *COG* is Clustes of Orthologous Genes (e.g. COG1646)
+-   *product* is the protein name (e.g. Geranylgeranylglyceryl phosphate synthase)
 
 We are only interested in lines with an EC number. This output is saved in the file `contig_119.ec`. We run minpath on this file by entering this command in the terminal:
 
@@ -246,10 +267,10 @@ minpath -ec contig_119.ec -report contig_119.ec.report -details contig_119.ec.de
 
 In the `contig_119.ec.report`:
 
-- *PWY-7321* is a pathway identifier in the metacyc database. It can be used to look up the full pathway (E.g. [PWY-7321](https://biocyc.org/pathway?orgid=META&id=PWY-7321))
-- *fam0 4* tells us four gene families are involved in ths=is pathway
-- *fam-found 2* tells us we found two gene families from the pathway in this genome
-- *name ecdysteroid metabolism (arthropods)* is the pathway name
+-   *PWY-7321* is a pathway identifier in the metacyc database. It can be used to look up the full pathway (E.g. [PWY-7321](https://biocyc.org/pathway?orgid=META&id=PWY-7321))
+-   *fam0 4* tells us four gene families are involved in ths=is pathway
+-   *fam-found 2* tells us we found two gene families from the pathway in this genome
+-   *name ecdysteroid metabolism (arthropods)* is the pathway name
 
 Run the following code in the terminal (once the prokka job is finished running) to prepare minpath inputs for each bin:
 
@@ -269,7 +290,7 @@ done < ../checkm/bbd_topbins.txt
 
 Two pathways from the output are of interest to us.
 
-1. **Photosynthesis light reactions** (metacyc code `PWY-101`) - this includes all the components necessary for photosynthesis that take place in light, Photosystem I, and Photosystem II. 
+1.  **Photosynthesis light reactions** (metacyc code `PWY-101`) - this includes all the components necessary for photosynthesis that take place in light, Photosystem I, and Photosystem II.
 
 ```{bash search photosynthesis, eval=FALSE}
 grep 'PWY-101' *.ec.report
@@ -286,7 +307,7 @@ grep 'metabat.48' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 grep 'metabat.50' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 ```
 
-2. [**Superpathway of tetrathionate reduction**](https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&object=PWY-5360) (metacyc code `PWY-5360`) - includes enzymes needed to reduce sulfite to hydrogen sulfide. 
+2.  [**Superpathway of tetrathionate reduction**](https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&object=PWY-5360) (metacyc code `PWY-5360`) - includes enzymes needed to reduce sulfite to hydrogen sulfide.
 
 ```{bash search tetrathionate, eval=FALSE}
 grep 'PWY-5360' *.ec.report
@@ -303,17 +324,18 @@ grep 'metabat.56' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 
 ## Results
 
-**Summarise your metagenome assembly of black band disease. How good is the assembly? Thanks about the metrics you have learned throughout the module to report on this.**
+### Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.
+
 In my metagenome assembly, the most complete bins are *contig_119* and *metabat.50* (97.62% and 97.56%, respectively). In the contig_119 bin, only 9 of 454 markers are missing, while in the metabat.50 bin only 11 of the 579 markers are missing. The high completeness of these bins indicates that they likely contain most of the information pertaining to function within the BBD community.
 
-**What organisms make up the largest components of the assembly? (results from gtdbtk)**
+### What organisms make up the largest components of the assembly? (results from gtdbtk)
+
 I have joined the appropriate columns from `checkm_results_bbd.txt` with `gtdbtk.bac120.summary.tsv` to help visualise which organisms make up the largest components of the assembly.
 
 ```{r load packages, echo=FALSE, include=FALSE}
 library(tidyverse)
 library(readr)
 ```
-
 
 ```{r gtdbtk results, include=FALSE}
 gtdbtk_result <- read_tsv("../gtdbtk/out/gtdbtk.bac120.summary.tsv")
@@ -336,7 +358,7 @@ org_assembly <- left_join(gtdbtk_result, checkm_result, by = c("user_genome" = "
 print(org_assembly, n = Inf)
 ```
 
-**A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?**
+### A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?
 
 ```{bash, eval=FALSE}
 cd prokka

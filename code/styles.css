@@ -1,0 +1,11 @@
+pre.sourceCode.bash,
+pre code.language-bash,
+pre code.bash {
+    background-color: #F5EFE1;
+    border-radius: 4px;
+    padding: 1em;
+    font-family: "SFMono-Regular", Consolas, Monaco, monospace;
+    font-size: 0.95em;
+    border: 1px solid #444;
+    overflow-x: auto;
+}
