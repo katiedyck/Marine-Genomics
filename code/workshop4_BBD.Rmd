@@ -31,11 +31,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Background
 
-### What is Black Band Disease? Why should we care about it?
+**What is Black Band Disease? Why should we care about it?**
 
-Black Band Disease (BBD) is an infectious polymicrobial disease that impacts several coral species. It is identifiable by a dark band (black or dark red in colour) 1mm to several cm wide that surrounds a pale-coloured area where coral tissue has been lost. Depending on environmental conditions, the disease can spread from 1mm to 1cm per day until an entire coral colony is affected. The disease was discovered by Alfred Antonius in 1973 in Belize. Since then, the disease has been reported in shallow coral reefs throughout the Caribbean, the Indo-Pacific, the Red Sea, and the Great Barrier Reef. The fact that BBD continues to become more (rather than less) prevalent is cause for concern. Researchers have linked its increased prevalence to human activity and rising global temperatures. Reef-building corals - those that are of greatest importance to maintaining reef health - are most impacted by BBD.
+Black Band Disease (BBD) is an infectious polymicrobial disease that impacts several reef-building coral species. It is identifiable by a distinct dark band (black or dark red in colour) ranging from 1mm to several cm wide, which surrounds the pale, exposed skeleton where coral tissue has died. The disease spreads as the microbial band moves across the coral colony, spreading at a rate of 1mm to 1cm per day depending on environmental conditions. Researchers studying BBD have confirmed that higher temperatures cause the disease to spread at a faster rate, and become more virulent. Should the disease progress enough, it can kill an entire coral colony. 
 
-### What do we know about the organisms that make up Black Band Disease and the taxonomic groups represented?
+Since it was first discovered by Alfred Antonius in Belize in 1973, BBD has been reported in coral reefs throughout the Caribbean, Indo-Pacific, Red Sea, and Great Barrier Reef. The fact that BBD continues to become more (rather than less) prevalent is cause for concern. Research has shown that the disease is caused by a variety of microorganisms, including cyanobacteria, sulfate-reducing bacteria, sulfur-oxidising bacteria, and heterotrophs, rather than a single pathogen. Seasonal outbreaks are tied to increased water temperatures and high light levels; the disease becomes more prevalent and progresses faster in warmer summer months. Studies have shown that higher temperatures can also increase the rate of the disease progression and virulence.
+
+BBD is worth caring about because it adds to the growing list of factors impacting coral reef health worldwide, including climate change, pollution, ocean acidification, and human impact. Reef-building corals provide the structural foundation of reef ecosystems, supporting a diversity of marine species. As global temperatures continue to increase, BBD outbreaks will only become more frequent and severe, causing further degradation to already fragile reef ecosystems. It is crucial that we understand the biology, environmental drivers and microbial interactions of BBD so we can predict outbreaks and create strategies to protect coral reefs worldwide. 
+
+**What do we know about the organisms that make up Black Band Disease and the taxonomic groups represented?**
 
 While researchers originally though it was caused by a single pathogen, it's now understood that BBD is is actually a complex microbial consortium that creates an anoxic, highly toxic (sulfur-rich) microenvironment coral tissue cannot survive in. There are 4 main taxonomic groups present in the consortium: *cyanobacteria*, *sulfate-reducing bacteria*, *sulfur-oxidising bacteria*, and *heterotrophs*.
 
@@ -52,9 +56,15 @@ There are distinct vertical environmental gradients within a BBD microbial mat.
 -   In the *middle* is the transition zone, which has sulfur-oxidising bacteria.
 -   The *bottom* is an anoxic, sulfide-rich zone dominated by sulfate reducers. At night, photosynthesis stops, oxygen quickly disappears, and sulfide concentrations quickly increase.
 
-### What are the gaps in our knowledge of BBD that could be addressed through an improved meta genome assembly?
+**What are the gaps in our knowledge of BBD that could be addressed through an improved meta genome assembly?**
 
+There are several gaps in our understanding of BBD that an improved metagenome assembly could help address. Most BBD studies rely on short-read genomic sequencing and taxonomic classification of individual reads. While these approaches have successfully identified which microorganisms are associated with BBD, they usually cannot reliably link metabolic genes to specific organisms because genomes stay fragemented. Improved metagenome assembly would generate more complete metagenome-assembled genomes (MAGs), allowing researchers to determine which organisms (e.g. cyanobacteria, heterotrophs) are responsible for which metabolic processes such as sulfur reduction, toxin production, virulence, and nutrient cycling. Current studies can tell us which organisms are present, but improved assemblies would help reveal what each organism is capable of doing.
 
+Although *Roseofilum reptotaenium* has consistently been associated as the dominant cyanobacteria in BBD mats, there remains uncertainty around its role in the progression of the disease. For example, it's still unclear whether *R. reptotaenium* damages coral tissue directly or creates an environment that allows other microorganisms to become pathogenic. In addition, genetic and metabolic diversity among *Roseofilum* strains from different geographic regions is poorly understood. More complete metagenome assemblies could reconstruct high-quality *Roseofilum* genomes, allowing researchers to compare strains from different regions and identify genes responsibly for pathogen production, toxin production, and environmental adaptation.
+
+Our understanding of sulfur cycling in BBD mats is largely incomplete. Sulfate-reducing bacteria produces hydrogen sulfide, while sulfur-oxidising bacteria reduces sulfur compounds, but complete metabolic pathways and organisms responsible for each step in the pathway have not been completely identified. Higher-quality metagenome assemblies would allow reconstruction of complete sulfur metabolism pathways and help scientists identify how interactions between sulfur-oxidising and sulfate-reducing microorganisms maintain the sulfide-rich environment that causes coral tissue death. 
+
+Many metagenome reads from BBD-infected corals are unable to be assigned to known species because reference genomes are incomplete. Improved metagenome assemblies could recover genomes from previously unknown microorganisms, improve current BBD databases, and provide scientists with a better understanding of microbial diversity in BBD communities around the world.
 
 ### About the data
 
@@ -66,21 +76,22 @@ From this subset of data we are going to try to generate a metagenome assembly. 
 
 ### Step 1: Assembly
 
-All outputs from this step will be saved inside a directory called `flye`, located in the main project directory.
+`flye`'s job is to look at each DNA sequence and assemble them into longer sequences called a **contig**.
+
+(All outputs from this step will be saved inside a directory called `flye`, located in the main project directory.)
 
 ```{bash flye directory, eval=FALSE, echo=FALSE}
 mkdir flye
 cd flye
 ```
 
-Make a symbolic link to the BBD read data by entering the following line into the R terminal:
+Make a symbolic link (shortcut) to the BBD raw sequencing reads data (`bbd_0.1.fastq.gz .`) by entering the following line into the R terminal:
 
 ```{bash, eval=FALSE}
-# make a symbolic link to BBD read data
 ln -s /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .
 ```
 
-Create a new shell script, `run_flye_bbd.sh`, inside the `flye` directory with the appropriate code. Submit the job for this script.
+Create a new shell script, [`run_flye_bbd.sh`](https://github.com/katiedyck/Marine-Genomics/blob/main/flye/run_flye_bbd.sh), inside the `flye` directory with the appropriate code. Submit the job for this script.
 
 ```{bash run_flye_bbd.sh code, eval=FALSE, echo=FALSE}
 #!/bin/bash
@@ -97,50 +108,61 @@ echo "Finished flye bbd in $(pwd) at $(date)"
 ```{bash submit job, eval=FALSE}
 sbatch run_flye_bbd.sh
 
-# `slurm-448.out` is my output file, saved in the flye directory.
+# `slurm-448.out` is my output file
 ```
+
+Before assembly, we just had millions of disconnected reads and information about which taxa are present. After assembly, we have much longer DNA sequences that can be grouped into metagenome-assembled genomes (MAGs), annotated to identify genes and metabolic pathways, and used to determine which organisms carry genes for sulfur metabolism, toxin production, or other functions. This is why metagenome assembly is a crucial step: it bridges the gap between identifying who is present in the BBD community and understanding what those organisms are capable of doing.
 
 ### Step 2: Binning with metabat
 
-1.  All outputs from this step will be saved inside a directory called `metabat`, located in the main project directory.
-2.  Extract depth information.
-3.  Reorder the contigs based on depth.
-4.  Run metabat.
+(All outputs from this step will be saved inside a directory called `metabat`, located in the main project directory.)
+
+The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: $$\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}$$
+Right now we have a file with thousands of contigs ([`assembly_info.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt)) and we don't know which organisms belong with which contig. We will use metabat to sort the contigs into "bins". The hope is that each bin represents one genome.
 
 ```{bash binning, eval=FALSE}
-# Extract depth information
+# Extract the depth information for each contig
 cat ../flye/bbd/assembly_info.txt  | grep -v '#' | awk '{OFS="\t";print $1,$3}' > depths_bbd.txt
+```
 
-# Reorder contigs based on depth
+- **Depth** is the average number of sequencing reads that cover any given region in a contig. (For example, a contig that has been sequenced 10 times has a greater depth than a contig that has only been sequenced 2 times.) It is useful for helping metabat group contigs together as contigs with very similar depths are most likely from the same organism.
+
+```{bash, eval=FALSE}
+# Reorder contigs based on their depth
 cat depths_bbd.txt | awk '{print $1}' | xargs samtools faidx ../flye/bbd/assembly.fasta > assembly_bbd_ordered.fasta
 
 # Run metabat
 metabat2 -i assembly_bbd_ordered.fasta -a depths_bbd.txt --cvExt -o bins_bbd/metabat --seed 5
 ```
 
-The output from running metabat was: [**67 bins (39299051 bases in total) formed**]{style="font-family: 'Courier New', Courier, monospace;"}
+- The output from running metabat was: [**67 bins (39299051 bases in total) formed**]{style="font-family: 'Courier New', Courier, monospace;"}
+- The depth of each contig is saved in [`depths_bbd.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/metabat/depths_bbd.txt). 
 
 ### Step 3: Check bin quality with checkm
 
-All outputs from this step will be saved inside a directory called `checkm`, located in the main project directory.
+(All outputs from this step will be saved inside a directory called `checkm`, located in the main project directory.)
 
-We want to find the number of the largest contig in the BBD assembly. We have to add this contig manually because it usually isn't included in the bins from metabat.
+Now that we've created our bins, we want to check how good they are. We want to find the number of the largest contig in the BBD assembly. We have to add this contig manually because it usually isn't included in the bins from metabat due to its unusual sequence composition or repetitive DNA sequences.
 
 ```{bash, eval=FALSE, echo=FALSE}
 # Display lengths of all contigs in ascending order
 cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | sort -n
 ```
 
--   The largest contig in our assembly is #119 (4,706,701 bp).
+-   **The largest contig in our assembly is contig_119 (4,706,701 bp).**
 
 Within the `checkm` folder, create a new directory called `bins_bbd`.
 
+Run this code in the R terminal so that checkm will analyse contig_119 alongside the other metabat bins.
 ```{bash, eval=FALSE}
+# Copy the metabat bins into the 'bins_bbd' folder
 cp ../metabat/bins_bbd/*.fa bins_bbd/
+
+# Extract the largest contig in the assembly and save it as its own fasta file (.fa)
 samtools faidx ../flye/bbd/assembly.fasta contig_119 > bins_bbd/contig_119.fa
 ```
 
-Create a new slurm script, `run_checkm_bbd.sh`, and save it in the `checkm` directory. Submit the job through the terminal.
+Create a new slurm script, [`run_checkm_bbd.sh`](https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/run_checkm_bbd.sh), and save it in the `checkm` directory. Submit the job through the terminal.
 
 ```{bash run_checkm_bbd slurm script, eval=FALSE, echo=FALSE}
 #!/bin/bash
@@ -159,9 +181,13 @@ echo "Finished checkm in $(pwd) at $(date)"
 
 ### Step 4: Select bins based on checkm results
 
-The results of the checkm bin quality check can be found in the text file `checkm_results_bbd.txt`, which is saved inside the checkm directory.
+Now we want to choose which genomes are worth analysing in detail.
 
-We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the "Completeness" column in `checkm_results_bbd.txt` to assess these results. We will focus on bins with a completeness greater than 15%.
+The results of the checkm bin quality check can be found in the text file [`checkm_results_bbd.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/checkm_results_bbd.txt), saved inside our checkm directory.
+
+**A good genome has high completeness and low contamination.**
+
+We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the "Completeness" column in `checkm_results_bbd.txt` to assess these results. We will focus on bins with a completeness greater than 15%. Run the code below through the R terminal to find these bins.
 
 ```{bash, eval=FALSE}
 cat checkm_results_bbd.txt | awk '$13>15'
@@ -170,7 +196,7 @@ cat checkm_results_bbd.txt | awk '$13>15'
 cat checkm_results_bbd.txt | awk '$13>15{print $1}'
 ```
 
-Save the output of the terminal commands above to a file, `bbd_topbins.txt`, so we can continue using it in our analysis:
+Save the output of these commands to a file, [`bbd_topbins.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/bbd_topbins.txt), so we can continue using it in our analysis.
 
 ```{bash, eval=FALSE}
 cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
@@ -190,7 +216,7 @@ while read bin;do echo "../metabat/bins_bbd/${bin}.fa";done < ../checkm/bbd_topb
 while read bin;do cp "../metabat/bins_bbd/${bin}.fa" genomes;done < ../checkm/bbd_topbins.txt
 ```
 
-Now we will run the classification workflow. Create a shell script inside the `gtdbtk` folder called `run_gtdbtk.sh` and submit it through the terminal.
+Now we will run the classification workflow. Create a shell script inside the `gtdbtk` folder called [`run_gtdbtk.sh`](https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/run_gtdbtk.sh), insert the appropriate code, and submit it through the terminal.
 
 ```{bash run_gtdbtk shell script, eval=FALSE, echo=FALSE}
 #!/bin/bash
