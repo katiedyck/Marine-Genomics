@@ -1,3 +1,5 @@
+# MB5370 Module 3: Marine Genomics
+
 This repository contains code, data, and images from MB5370 module on marine genomics &amp; bioinformatics.
 
 - Workshop 1: [Introduction](code/genomics_workshop1.Rmd)
