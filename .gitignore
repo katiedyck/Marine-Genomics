@@ -33,4 +33,11 @@
 *.gff
 *.sqn
 *.tbl
-*.ec
+*.eccheckm/out/
+*.Rproj
+minpath/*.ec
+code/*.ec
+gtdbtk/out/
+flye/bbd/
+code/*.html
+checkm/out/
