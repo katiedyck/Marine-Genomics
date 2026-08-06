@@ -10,3 +10,5 @@ This repository contains code, data, and images from MB5370 module on marine gen
 My RMarkdown files for each workshop can be found in the **code** folder. `styles.css` contains formatting for my Markdown files that shows terminal bash coding in a unique formatting, making it easier to distinguish from R coding.
 
 The [checkm](checkm), [flye](flye), [gtdbtk](gtdbtk), [metabat](metabat), [minpath](minpath) and [prokka](prokka) folders contain files from Workshop 4.
+
+...
