@@ -5,6 +5,8 @@ author: "Katie Dyck"
 date: 2026-07-15
 format:
   html:
+      df-scroll: true
+      df-print: paged
       css: styles.css
       embed-resources: true
       code-fold: show
@@ -33,11 +35,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **What is Black Band Disease? Why should we care about it?**
 
-Black Band Disease (BBD) is an infectious polymicrobial disease that impacts several reef-building coral species. It is identifiable by a distinct dark band (black or dark red in colour) ranging from 1mm to several cm wide, which surrounds the pale, exposed skeleton where coral tissue has died. The disease spreads as the microbial band moves across the coral colony, spreading at a rate of 1mm to 1cm per day depending on environmental conditions. Researchers studying BBD have confirmed that higher temperatures cause the disease to spread at a faster rate, and become more virulent. Should the disease progress enough, it can kill an entire coral colony. 
+Black Band Disease (BBD) is an infectious polymicrobial disease that impacts several reef-building coral species. It is identifiable by a distinct dark band (black or dark red in colour) ranging from 1mm to several cm wide, which surrounds the pale, exposed skeleton where coral tissue has died. The disease spreads as the microbial band moves across the coral colony, spreading at a rate of 1mm to 1cm per day depending on environmental conditions. Researchers studying BBD have confirmed that higher temperatures cause the disease to spread at a faster rate, and become more virulent. Should the disease progress enough, it can kill an entire coral colony.
 
 Since it was first discovered by Alfred Antonius in Belize in 1973, BBD has been reported in coral reefs throughout the Caribbean, Indo-Pacific, Red Sea, and Great Barrier Reef. The fact that BBD continues to become more (rather than less) prevalent is cause for concern. Research has shown that the disease is caused by a variety of microorganisms, including cyanobacteria, sulfate-reducing bacteria, sulfur-oxidising bacteria, and heterotrophs, rather than a single pathogen. Seasonal outbreaks are tied to increased water temperatures and high light levels; the disease becomes more prevalent and progresses faster in warmer summer months. Studies have shown that higher temperatures can also increase the rate of the disease progression and virulence.
 
-BBD is worth caring about because it adds to the growing list of factors impacting coral reef health worldwide, including climate change, pollution, ocean acidification, and human impact. Reef-building corals provide the structural foundation of reef ecosystems, supporting a diversity of marine species. As global temperatures continue to increase, BBD outbreaks will only become more frequent and severe, causing further degradation to already fragile reef ecosystems. It is crucial that we understand the biology, environmental drivers and microbial interactions of BBD so we can predict outbreaks and create strategies to protect coral reefs worldwide. 
+BBD is worth caring about because it adds to the growing list of factors impacting coral reef health worldwide, including climate change, pollution, ocean acidification, and human impact. Reef-building corals provide the structural foundation of reef ecosystems, supporting a diversity of marine species. As global temperatures continue to increase, BBD outbreaks will only become more frequent and severe, causing further degradation to already fragile reef ecosystems. It is crucial that we understand the biology, environmental drivers and microbial interactions of BBD so we can predict outbreaks and create strategies to protect coral reefs worldwide.
 
 **What do we know about the organisms that make up Black Band Disease and the taxonomic groups represented?**
 
@@ -62,7 +64,7 @@ There are several gaps in our understanding of BBD that an improved metagenome a
 
 Although *Roseofilum reptotaenium* has consistently been associated as the dominant cyanobacteria in BBD mats, there remains uncertainty around its role in the progression of the disease. For example, it's still unclear whether *R. reptotaenium* damages coral tissue directly or creates an environment that allows other microorganisms to become pathogenic. In addition, genetic and metabolic diversity among *Roseofilum* strains from different geographic regions is poorly understood. More complete metagenome assemblies could reconstruct high-quality *Roseofilum* genomes, allowing researchers to compare strains from different regions and identify genes responsibly for pathogen production, toxin production, and environmental adaptation.
 
-Our understanding of sulfur cycling in BBD mats is largely incomplete. Sulfate-reducing bacteria produces hydrogen sulfide, while sulfur-oxidising bacteria reduces sulfur compounds, but complete metabolic pathways and organisms responsible for each step in the pathway have not been completely identified. Higher-quality metagenome assemblies would allow reconstruction of complete sulfur metabolism pathways and help scientists identify how interactions between sulfur-oxidising and sulfate-reducing microorganisms maintain the sulfide-rich environment that causes coral tissue death. 
+Our understanding of sulfur cycling in BBD mats is largely incomplete. Sulfate-reducing bacteria produces hydrogen sulfide, while sulfur-oxidising bacteria reduces sulfur compounds, but complete metabolic pathways and organisms responsible for each step in the pathway have not been completely identified. Higher-quality metagenome assemblies would allow reconstruction of complete sulfur metabolism pathways and help scientists identify how interactions between sulfur-oxidising and sulfate-reducing microorganisms maintain the sulfide-rich environment that causes coral tissue death.
 
 Many metagenome reads from BBD-infected corals are unable to be assigned to known species because reference genomes are incomplete. Improved metagenome assemblies could recover genomes from previously unknown microorganisms, improve current BBD databases, and provide scientists with a better understanding of microbial diversity in BBD communities around the world.
 
@@ -117,15 +119,14 @@ Before assembly, we just had millions of disconnected reads and information abou
 
 (All outputs from this step will be saved inside a directory called `metabat`, located in the main project directory.)
 
-The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: $$\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}$$
-Right now we have a file with thousands of contigs ([`assembly_info.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt){target="_blank"}) and we don't know which organisms belong with which contig. We will use metabat to sort the contigs into "bins". The hope is that each bin represents one genome.
+The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: $$\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}$$ Right now we have a file with thousands of contigs ([`assembly_info.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt){target="_blank"}) and we don't know which organisms belong with which contig. We will use metabat to sort the contigs into "bins". The hope is that each bin represents one genome.
 
 ```{bash binning, eval=FALSE}
 # Extract the depth information for each contig
 cat ../flye/bbd/assembly_info.txt  | grep -v '#' | awk '{OFS="\t";print $1,$3}' > depths_bbd.txt
 ```
 
-- **Depth** is the average number of sequencing reads that cover any given region in a contig. (For example, a contig that has been sequenced 10 times has a greater depth than a contig that has only been sequenced 2 times.) It is useful for helping metabat group contigs together as contigs with very similar depths are most likely from the same organism.
+-   **Depth** is the average number of sequencing reads that cover any given region in a contig. (For example, a contig that has been sequenced 10 times has a greater depth than a contig that has only been sequenced 2 times.) It is useful for helping metabat group contigs together as contigs with very similar depths are most likely from the same organism.
 
 ```{bash, eval=FALSE}
 # Reorder contigs based on their depth
@@ -135,8 +136,8 @@ cat depths_bbd.txt | awk '{print $1}' | xargs samtools faidx ../flye/bbd/assembl
 metabat2 -i assembly_bbd_ordered.fasta -a depths_bbd.txt --cvExt -o bins_bbd/metabat --seed 5
 ```
 
-- The output from running metabat was: [**67 bins (39299051 bases in total) formed**]{style="font-family: 'Courier New', Courier, monospace;"}
-- The depth of each contig is saved in [`depths_bbd.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/metabat/depths_bbd.txt){target="_blank"}. 
+-   The output from running metabat was: [**67 bins (39299051 bases in total) formed**]{style="font-family: 'Courier New', Courier, monospace;"}
+-   The depth of each contig is saved in [`depths_bbd.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/metabat/depths_bbd.txt){target="_blank"}.
 
 ### Step 3: Check bin quality with checkm
 
@@ -154,6 +155,7 @@ cat ../flye/bbd/assembly.fasta | bioawk -c fastx '{print length($seq),$name}' | 
 Within the `checkm` folder, create a new directory called `bins_bbd`.
 
 Run this code in the R terminal so that checkm will analyse contig_119 alongside the other metabat bins.
+
 ```{bash, eval=FALSE}
 # Copy the metabat bins into the 'bins_bbd' folder
 cp ../metabat/bins_bbd/*.fa bins_bbd/
@@ -269,13 +271,13 @@ done < ../checkm/bbd_topbins.txt
 echo "Finished prokka in $(pwd) at $(date)"
 ```
 
-```{bash, eval=FALSE}
+```{bash, eval=FALSE, include=FALSE}
 # Output file is named "slurm-603.out"
 ```
 
 ### Step 8: Infer metabolic pathways
 
-To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool [minpath](https://omics.informatics.indiana.edu/MinPath/){target="_blank"}. We will run this on each genome in our analysis.
+To take the functional information for individual genes in *contig_119* and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool [minpath](https://omics.informatics.indiana.edu/MinPath/){target="_blank"}. We will run this on each genome in our analysis.
 
 All outputs from this step will be saved inside a directory called `minpath`, located in the main project directory.
 
@@ -352,7 +354,7 @@ grep 'metabat.56' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 
 **Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.**
 
-In my metagenome assembly, the most complete bins are *contig_119* and *metabat.50* (97.62% and 97.56%, respectively). In the contig_119 bin, only 9 of 454 markers are missing, while in the metabat.50 bin only 11 of the 579 markers are missing. The high completeness of these bins indicates that they likely contain most of the information pertaining to function within the BBD community.
+The metagenome assembly produced 67 bins comprising approximately 39.3 Mb of assembled sequence. The highest-quality genomes (i.e. most complete bins) were `contig_119` (97.62% completeness) and `metabat.50` (97.56% completeness), indicating that these genomes are nearly complete. High completeness suggests that most expected marker genes were recovered; these genomes contain majority of the information pertaining to function within the BBD community. According to CheckM, only 9 of 454 marker genes were missing from *contig_119* and 11 of 579 marker genes were missing from *metabat.50*. Contamination levels were low (1.64% for *contig_119* and 0.67% for *metabat.50*), these represent high-quality metagenome-assembled genomes (MAGs).
 
 **What organisms make up the largest components of the assembly? (results from gtdbtk)**
 
@@ -361,6 +363,7 @@ I have joined the appropriate columns from `checkm_results_bbd.txt` with `gtdbtk
 ```{r load packages, echo=FALSE, include=FALSE}
 library(tidyverse)
 library(readr)
+library(DT)
 ```
 
 ```{r gtdbtk results, include=FALSE}
@@ -381,10 +384,24 @@ org_assembly <- left_join(gtdbtk_result, checkm_result, by = c("user_genome" = "
   # fix column names
   rename(c("bin_id" = "user_genome", "organism" = "classification", "# genomes" = "lineage", "# markers" = "#", "0" = "#_1", "1" = "markers", "2" = "#_2", "3" = "marker", "4" = "sets", "5+" = "0", "completeness" = "1", "contamination" = "2"))
 
-print(org_assembly, n = Inf)
+datatable(org_assembly, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
 ```
 
-**A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?**
+<br/> On all 16 bins that are above 15% completeness, they cluster into 5 phyla, with sulfur-cycling bacteria dominating by bin count:
+
+-   **Desulfobacterota (5 bins)** — Sulfate/sulfite reducers. *metabat.27*, *metabat.23*, *metabat.41*, *metabat.42*, and *metabat.2*.
+
+-   **Campylobacterota (5 bins)** — Sulfur-oxidizing/cycling bacteria. *metabat.56*, *metabat.32*, *metabat.43*, *metabat.14*, and *metabat.3*.
+
+-   **Bacteroidota (3 bins)** — *contig_119*, *metabat.48*, and *metabat.11*.
+
+-   **Firmicutes_A (2 bins)** — Probably heterotrophs. *metabat.24* and *metabat.47*.
+
+-   **Cyanobacteria (1 bin)** — *Roseofilum reptotaenium* at 97.56% of the reference genome, the BBD-dominant cyanobacterium. *metabat.50*.
+
+Going by bin count, sulfur-cycling organisms dominate the community, which is consistent with the structure of BBD.
+
+**Give a brief summary of the results of `prokka` and `minpath` annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?**
 
 ```{bash, eval=FALSE}
 cd prokka
@@ -399,8 +416,28 @@ while read bin;do echo $bin; done < ../checkm/bbd_topbins.txt
 cat ../minpath/*.ec|wc -l
 ```
 
+```{r prokka EC count, echo=FALSE}
+prokka_ECcount <- readxl::read_xlsx("../prokka_minpath_result.xlsx", sheet = 1)
+datatable(prokka_ECcount, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
+```
+
+<br/> Across the top 16 bins, 20,257 genes were identified by prokka, of which 5,196 (25%) were assigned an EC number. The rest of the genes are either non-enzymatic (structural, regulatory, or transport proteins) or enzymes without an EC classification. This is a normal proportion for prokaryotic genome annotation. Notably, the proportion of genes with an EC number is fairly stable (\~22–36%) regardless of bin completeness, suggesting Prokka's annotation rate isn't biased by fragmentation — though the absolute number of annotated pathways minpath can detect is still limited by how complete each genome is.
+
+Feeding these EC numbers into minpath produced pathway reports of very different sizes depending on genome completeness:
+
+```{r distinct pathways for top 16 genes, echo=FALSE}
+pathways <- readxl::read_xlsx("../prokka_minpath_result.xlsx", sheet = 2)
+datatable(pathways, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
+```
+
+<br/> Pathway richness tracks closely with genome completeness and size — the two \>97%-complete bins (*metabat.50*, *contig_119*) have a far richer metabolic annotation. This is a useful caveat for interpreting the lower-completeness bins: absence of a pathway there more likely reflects incomplete genome recovery than a real absence of that metabolic capacity.
+
 ## Discussion
 
 **Comment on the quality of your assembly compared with previously published results using Illumina data from Sato et al. Can you identify bins representing key bacterial taxa that are found in both assemblies? Are there any highly complete bins in one assembly that do not have a clear match in the other assembly? For bins that match across assemblies how to the completeness and contamination statistics compare?**
+
+Sato et al. assembled short-read metagenomes with curated bins using CheckM with tetranucleotide composition and differential cover. If we compare taxonomy at the genus level, there is clear overlap with this nanopore assembly:
+
+-   **Cyanobacteria**: 
 
 **Comment on the results of pathway analysis with minpath. Which bin contains most of the genes required for photosynthesis? Which bin or bins are most likely to be contributing to sulfate reduction?**
