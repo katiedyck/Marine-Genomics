@@ -2373,12 +2373,7 @@ overflow-x: auto;
   <li><a href="#step-6-find-and-annotate-genes-with-prokka" id="toc-step-6-find-and-annotate-genes-with-prokka" class="nav-link" data-scroll-target="#step-6-find-and-annotate-genes-with-prokka"><span class="header-section-number">2.6</span> Step 6: Find and annotate genes with prokka</a></li>
   <li><a href="#step-8-infer-metabolic-pathways" id="toc-step-8-infer-metabolic-pathways" class="nav-link" data-scroll-target="#step-8-infer-metabolic-pathways"><span class="header-section-number">2.7</span> Step 8: Infer metabolic pathways</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a>
-  <ul class="collapse">
-  <li><a href="#summarise-your-metagenome-assembly-of-black-band-disease.-how-good-is-the-assembly-think-about-the-metrics-you-have-learned-throughout-the-module-to-report-on-this." id="toc-summarise-your-metagenome-assembly-of-black-band-disease.-how-good-is-the-assembly-think-about-the-metrics-you-have-learned-throughout-the-module-to-report-on-this." class="nav-link" data-scroll-target="#summarise-your-metagenome-assembly-of-black-band-disease.-how-good-is-the-assembly-think-about-the-metrics-you-have-learned-throughout-the-module-to-report-on-this."><span class="header-section-number">3.1</span> Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.</a></li>
-  <li><a href="#what-organisms-make-up-the-largest-components-of-the-assembly-results-from-gtdbtk" id="toc-what-organisms-make-up-the-largest-components-of-the-assembly-results-from-gtdbtk" class="nav-link" data-scroll-target="#what-organisms-make-up-the-largest-components-of-the-assembly-results-from-gtdbtk"><span class="header-section-number">3.2</span> What organisms make up the largest components of the assembly? (results from gtdbtk)</a></li>
-  <li><a href="#a-brief-summary-of-the-results-of-prokka-and-minpath-annotation-on-this-assembly.-how-many-genes-were-identified-by-prokka-of-these-how-many-were-assigned-an-ec-number" id="toc-a-brief-summary-of-the-results-of-prokka-and-minpath-annotation-on-this-assembly.-how-many-genes-were-identified-by-prokka-of-these-how-many-were-assigned-an-ec-number" class="nav-link" data-scroll-target="#a-brief-summary-of-the-results-of-prokka-and-minpath-annotation-on-this-assembly.-how-many-genes-were-identified-by-prokka-of-these-how-many-were-assigned-an-ec-number"><span class="header-section-number">3.3</span> A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?</a></li>
-  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a></li>
   </ul>
 </nav>
@@ -2436,7 +2431,7 @@ overflow-x: auto;
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Create a new shell script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/run_flye_bbd.sh"><code>run_flye_bbd.sh</code></a>, inside the <code>flye</code> directory with the appropriate code. Submit the job for this script.</p>
+<p>Create a new shell script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/run_flye_bbd.sh" target="_blank"><code>run_flye_bbd.sh</code></a>, inside the <code>flye</code> directory with the appropriate code. Submit the job for this script.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2450,7 +2445,7 @@ overflow-x: auto;
 <section id="step-2-binning-with-metabat" class="level3" data-number="2.2">
 <h3 data-number="2.2" class="anchored" data-anchor-id="step-2-binning-with-metabat"><span class="header-section-number">2.2</span> Step 2: Binning with metabat</h3>
 <p>(All outputs from this step will be saved inside a directory called <code>metabat</code>, located in the main project directory.)</p>
-<p>The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: <span class="math display">\[\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}\]</span> Right now we have a file with thousands of contigs (<a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt"><code>assembly_info.txt</code></a>) and we don’t know which organisms belong with which contig. We will use metabat to sort the contigs into “bins”. The hope is that each bin represents one genome.</p>
+<p>The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: <span class="math display">\[\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}\]</span> Right now we have a file with thousands of contigs (<a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt" target="_blank"><code>assembly_info.txt</code></a>) and we don’t know which organisms belong with which contig. We will use metabat to sort the contigs into “bins”. The hope is that each bin represents one genome.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2473,7 +2468,7 @@ overflow-x: auto;
 </div>
 <ul>
 <li>The output from running metabat was: <span style="font-family: &#39;Courier New&#39;, Courier, monospace;"><strong>67 bins (39299051 bases in total) formed</strong></span></li>
-<li>The depth of each contig is saved in <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/metabat/depths_bbd.txt"><code>depths_bbd.txt</code></a>.</li>
+<li>The depth of each contig is saved in <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/metabat/depths_bbd.txt" target="_blank"><code>depths_bbd.txt</code></a>.</li>
 </ul>
 </section>
 <section id="step-3-check-bin-quality-with-checkm" class="level3" data-number="2.3">
@@ -2495,12 +2490,12 @@ overflow-x: auto;
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> faidx ../flye/bbd/assembly.fasta contig_119 <span class="op">&gt;</span> bins_bbd/contig_119.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Create a new slurm script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/run_checkm_bbd.sh"><code>run_checkm_bbd.sh</code></a>, and save it in the <code>checkm</code> directory. Submit the job through the terminal.</p>
+<p>Create a new slurm script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/run_checkm_bbd.sh" target="_blank"><code>run_checkm_bbd.sh</code></a>, and save it in the <code>checkm</code> directory. Submit the job through the terminal.</p>
 </section>
 <section id="step-4-select-bins-based-on-checkm-results" class="level3" data-number="2.4">
 <h3 data-number="2.4" class="anchored" data-anchor-id="step-4-select-bins-based-on-checkm-results"><span class="header-section-number">2.4</span> Step 4: Select bins based on checkm results</h3>
 <p>Now we want to choose which genomes are worth analysing in detail.</p>
-<p>The results of the checkm bin quality check can be found in the text file <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/checkm_results_bbd.txt"><code>checkm_results_bbd.txt</code></a>, saved inside our checkm directory.</p>
+<p>The results of the checkm bin quality check can be found in the text file <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/checkm_results_bbd.txt" target="_blank"><code>checkm_results_bbd.txt</code></a>, saved inside our checkm directory.</p>
 <p><strong>A good genome has high completeness and low contamination.</strong></p>
 <p>We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the “Completeness” column in <code>checkm_results_bbd.txt</code> to assess these results. We will focus on bins with a completeness greater than 15%. Run the code below through the R terminal to find these bins.</p>
 <div class="cell">
@@ -2512,7 +2507,7 @@ overflow-x: auto;
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> checkm_results_bbd.txt <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;$13&gt;15{print $1}&#39;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Save the output of these commands to a file, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/bbd_topbins.txt"><code>bbd_topbins.txt</code></a>, so we can continue using it in our analysis.</p>
+<p>Save the output of these commands to a file, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/bbd_topbins.txt" target="_blank"><code>bbd_topbins.txt</code></a>, so we can continue using it in our analysis.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2536,12 +2531,12 @@ overflow-x: auto;
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> <span class="fu">cp</span> <span class="st">&quot;../metabat/bins_bbd/</span><span class="va">${bin}</span><span class="st">.fa&quot;</span> genomes<span class="kw">;</span><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Now we will run the classification workflow. Create a shell script inside the <code>gtdbtk</code> folder called <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/run_gtdbtk.sh"><code>run_gtdbtk.sh</code></a>, insert the appropriate code, and submit it through the terminal.</p>
-<p>The output of this file is saved in <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/out/classify/gtdbtk.bac120.summary.tsv"><code>gtdbtk.bac120.summary.tsv</code></a>.</p>
+<p>Now we will run the classification workflow. Create a shell script inside the <code>gtdbtk</code> folder called <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/run_gtdbtk.sh" target="_blank"><code>run_gtdbtk.sh</code></a>, insert the appropriate code, and submit it through the terminal.</p>
+<p>The output of this file is saved in <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/out/classify/gtdbtk.bac120.summary.tsv" target="_blank"><code>gtdbtk.bac120.summary.tsv</code></a>.</p>
 </section>
 <section id="step-6-find-and-annotate-genes-with-prokka" class="level3" data-number="2.6">
 <h3 data-number="2.6" class="anchored" data-anchor-id="step-6-find-and-annotate-genes-with-prokka"><span class="header-section-number">2.6</span> Step 6: Find and annotate genes with prokka</h3>
-<p>For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program <a href="https://github.com/tseemann/prokka">Prokka</a> will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar.</p>
+<p>For us to better our understanding of metabolic processes within the BBD metagenome, we need to identify which genes are present within the genomes of the BBD taxa. The program <a href="https://github.com/tseemann/prokka" target="_blank">Prokka</a> will identify gene sequences and homologous genes with known functions for us. Homologous genes share a common ancestor, therefore their functions are probably similar.</p>
 <p>All outputs from this step will be saved inside a directory called <code>prokka</code>, located in the main project directory.</p>
 <p>First, we want to run prokka for a single bin. Identify the first bin ID from <code>bbd_topbins.txt</code>, then run the following code through the terminal:</p>
 <div class="cell">
@@ -2562,7 +2557,7 @@ overflow-x: auto;
 </section>
 <section id="step-8-infer-metabolic-pathways" class="level3" data-number="2.7">
 <h3 data-number="2.7" class="anchored" data-anchor-id="step-8-infer-metabolic-pathways"><span class="header-section-number">2.7</span> Step 8: Infer metabolic pathways</h3>
-<p>To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool <a href="https://omics.informatics.indiana.edu/MinPath/">minpath</a>. We will run this on each genome in our analysis.</p>
+<p>To take the functional information for individual genes in contig_119 and use it to infer the presence of broader biological pathways (i.e. multiple genes), we will use the tool <a href="https://omics.informatics.indiana.edu/MinPath/" target="_blank">minpath</a>. We will run this on each genome in our analysis.</p>
 <p>All outputs from this step will be saved inside a directory called <code>minpath</code>, located in the main project directory.</p>
 <p>We will use the <code>contig_119.tsv</code> file to prepare inputs for minpath. Within this file:</p>
 <ul>
@@ -2579,7 +2574,7 @@ overflow-x: auto;
 </div>
 <p>In the <code>contig_119.ec.report</code>:</p>
 <ul>
-<li><em>PWY-7321</em> is a pathway identifier in the metacyc database. It can be used to look up the full pathway (E.g. <a href="https://biocyc.org/pathway?orgid=META&amp;id=PWY-7321">PWY-7321</a>)</li>
+<li><em>PWY-7321</em> is a pathway identifier in the metacyc database. It can be used to look up the full pathway (E.g. <a href="https://biocyc.org/pathway?orgid=META&amp;id=PWY-7321" target="_blank">PWY-7321</a>)</li>
 <li><em>fam0 4</em> tells us four gene families are involved in ths=is pathway</li>
 <li><em>fam-found 2</em> tells us we found two gene families from the pathway in this genome</li>
 <li><em>name ecdysteroid metabolism (arthropods)</em> is the pathway name</li>
@@ -2624,7 +2619,7 @@ overflow-x: auto;
 </details>
 </div>
 <ol start="2" type="1">
-<li><a href="https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&amp;object=PWY-5360"><strong>Superpathway of tetrathionate reduction</strong></a> (metacyc code <code>PWY-5360</code>) - includes enzymes needed to reduce sulfite to hydrogen sulfide.</li>
+<li><a href="https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&amp;object=PWY-5360" target="_blank"><strong>Superpathway of tetrathionate reduction</strong></a> (metacyc code <code>PWY-5360</code>) - includes enzymes needed to reduce sulfite to hydrogen sulfide.</li>
 </ol>
 <div class="cell">
 <details open class="code-fold">
@@ -2645,12 +2640,9 @@ overflow-x: auto;
 </section>
 <section id="results" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="results"><span class="header-section-number">3</span> Results</h2>
-<section id="summarise-your-metagenome-assembly-of-black-band-disease.-how-good-is-the-assembly-think-about-the-metrics-you-have-learned-throughout-the-module-to-report-on-this." class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="summarise-your-metagenome-assembly-of-black-band-disease.-how-good-is-the-assembly-think-about-the-metrics-you-have-learned-throughout-the-module-to-report-on-this."><span class="header-section-number">3.1</span> Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.</h3>
+<p><strong>Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.</strong></p>
 <p>In my metagenome assembly, the most complete bins are <em>contig_119</em> and <em>metabat.50</em> (97.62% and 97.56%, respectively). In the contig_119 bin, only 9 of 454 markers are missing, while in the metabat.50 bin only 11 of the 579 markers are missing. The high completeness of these bins indicates that they likely contain most of the information pertaining to function within the BBD community.</p>
-</section>
-<section id="what-organisms-make-up-the-largest-components-of-the-assembly-results-from-gtdbtk" class="level3" data-number="3.2">
-<h3 data-number="3.2" class="anchored" data-anchor-id="what-organisms-make-up-the-largest-components-of-the-assembly-results-from-gtdbtk"><span class="header-section-number">3.2</span> What organisms make up the largest components of the assembly? (results from gtdbtk)</h3>
+<p><strong>What organisms make up the largest components of the assembly? (results from gtdbtk)</strong></p>
 <p>I have joined the appropriate columns from <code>checkm_results_bbd.txt</code> with <code>gtdbtk.bac120.summary.tsv</code> to help visualise which organisms make up the largest components of the assembly.</p>
 <div class="cell">
 <details open class="code-fold">
@@ -2687,9 +2679,7 @@ overflow-x: auto;
 # ℹ 2 more variables: completeness &lt;dbl&gt;, contamination &lt;dbl&gt;</code></pre>
 </div>
 </div>
-</section>
-<section id="a-brief-summary-of-the-results-of-prokka-and-minpath-annotation-on-this-assembly.-how-many-genes-were-identified-by-prokka-of-these-how-many-were-assigned-an-ec-number" class="level3" data-number="3.3">
-<h3 data-number="3.3" class="anchored" data-anchor-id="a-brief-summary-of-the-results-of-prokka-and-minpath-annotation-on-this-assembly.-how-many-genes-were-identified-by-prokka-of-these-how-many-were-assigned-an-ec-number"><span class="header-section-number">3.3</span> A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?</h3>
+<p><strong>A brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?</strong></p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2705,7 +2695,6 @@ overflow-x: auto;
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ../minpath/<span class="pp">*</span>.ec<span class="kw">|</span><span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section>
 </section>
 <section id="discussion" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="discussion"><span class="header-section-number">4</span> Discussion</h2>
