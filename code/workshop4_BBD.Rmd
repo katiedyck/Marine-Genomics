@@ -113,7 +113,7 @@ sbatch run_flye_bbd.sh
 # `slurm-448.out` is my output file
 ```
 
-Before assembly, we just had millions of disconnected reads and information about which taxa are present. After assembly, we have much longer DNA sequences that can be grouped into metagenome-assembled genomes (MAGs), annotated to identify genes and metabolic pathways, and used to determine which organisms carry genes for sulfur metabolism, toxin production, or other functions. This is why metagenome assembly is a crucial step: it bridges the gap between identifying who is present in the BBD community and understanding what those organisms are capable of doing.
+Before assembly, we just had millions of disconnected reads and information about which taxa are present. After assembly, we have much longer DNA sequences that can be grouped into MAGs, annotated to identify genes and metabolic pathways, and used to determine which organisms carry genes for sulfur metabolism, toxin production, or other functions. This is why metagenome assembly is a crucial step: it bridges the gap between identifying who is present in the BBD community and understanding what those organisms are capable of doing.
 
 ### Step 2: Binning with metabat
 
@@ -352,11 +352,11 @@ grep 'metabat.56' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 
 ## Results
 
-**Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.**
+1. **Summarise your metagenome assembly of black band disease. How good is the assembly? Think about the metrics you have learned throughout the module to report on this.**
 
-The metagenome assembly produced 67 bins comprising approximately 39.3 Mb of assembled sequence. The highest-quality genomes (i.e. most complete bins) were `contig_119` (97.62% completeness) and `metabat.50` (97.56% completeness), indicating that these genomes are nearly complete. High completeness suggests that most expected marker genes were recovered; these genomes contain majority of the information pertaining to function within the BBD community. According to CheckM, only 9 of 454 marker genes were missing from *contig_119* and 11 of 579 marker genes were missing from *metabat.50*. Contamination levels were low (1.64% for *contig_119* and 0.67% for *metabat.50*), these represent high-quality metagenome-assembled genomes (MAGs).
+The metagenome assembly produced 67 bins comprising approximately 39.3 Mb of assembled sequence. The highest-quality genomes (i.e. most complete bins) were `contig_119` (97.62% completeness) and `metabat.50` (97.56% completeness), indicating that these genomes are nearly complete. High completeness suggests that most expected marker genes were recovered; these genomes contain majority of the information pertaining to function within the BBD community. According to CheckM, only 9 of 454 marker genes were missing from contig_119 and 11 of 579 marker genes were missing from metabat.50. Contamination levels were low (1.64% for contig_119 and 0.67% for metabat.50), these represent high-quality MAGs.
 
-**What organisms make up the largest components of the assembly? (results from gtdbtk)**
+2. **What organisms make up the largest components of the assembly? (results from gtdbtk)**
 
 I have joined the appropriate columns from `checkm_results_bbd.txt` with `gtdbtk.bac120.summary.tsv` to help visualise which organisms make up the largest components of the assembly.
 
@@ -366,7 +366,7 @@ library(readr)
 library(DT)
 ```
 
-```{r gtdbtk results, include=FALSE}
+```{r gtdbtk results, echo=FALSE, include=FALSE}
 gtdbtk_result <- read_tsv("../gtdbtk/out/gtdbtk.bac120.summary.tsv")
 # head(gtdbtk_result)
 
@@ -377,33 +377,35 @@ checkm_result <- read_table(paste(lines, collapse = "\n"))   # Read using whites
 ```
 
 ```{r left join}
+#| code-fold: true
 # Left join
 org_assembly <- left_join(gtdbtk_result, checkm_result, by = c("user_genome" = "Bin")) %>%
   # remove unnecessary columns
   select(c(1,2,23,24,26:33)) %>%
   # fix column names
-  rename(c("bin_id" = "user_genome", "organism" = "classification", "# genomes" = "lineage", "# markers" = "#", "0" = "#_1", "1" = "markers", "2" = "#_2", "3" = "marker", "4" = "sets", "5+" = "0", "completeness" = "1", "contamination" = "2"))
+  rename(c("Bin ID" = "user_genome", "Organism" = "classification", "# Genomes" = "lineage", "# Markers" = "#", "0" = "#_1", "1" = "markers", "2" = "#_2", "3" = "marker", "4" = "sets", "5+" = "0", "Completeness %" = "1", "Contamination %" = "2"))
 
-datatable(org_assembly, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
+datatable(org_assembly, options = list(scrollX = TRUE, scrollCollapse = TRUE, paging = FALSE), rownames = FALSE,
+          caption = "GTDB-Tk and CheckM results for the top 16 genomes in the assembly.")
 ```
 
 <br/> On all 16 bins that are above 15% completeness, they cluster into 5 phyla, with sulfur-cycling bacteria dominating by bin count:
 
--   **Desulfobacterota (5 bins)** — Sulfate/sulfite reducers. *metabat.27*, *metabat.23*, *metabat.41*, *metabat.42*, and *metabat.2*.
+-   **Desulfobacterota (5 bins)** — Sulfate/sulfite reducers. Present in metabat.27, metabat.23, metabat.41, metabat.42, and metabat.2.
 
--   **Campylobacterota (5 bins)** — Sulfur-oxidizing/cycling bacteria. *metabat.56*, *metabat.32*, *metabat.43*, *metabat.14*, and *metabat.3*.
+-   **Campylobacterota (5 bins)** — Sulfur-oxidizing/cycling bacteria. Present in metabat.56, metabat.32, metabat.43, metabat.14, and metabat.3.
 
--   **Bacteroidota (3 bins)** — *contig_119*, *metabat.48*, and *metabat.11*.
+-   **Bacteroidota (3 bins)** — Present in contig_119, metabat.48, and metabat.11.
 
--   **Firmicutes_A (2 bins)** — Probably heterotrophs. *metabat.24* and *metabat.47*.
+-   **Firmicutes_A (2 bins)** — Probably heterotrophs. Present in metabat.24 and metabat.47.
 
--   **Cyanobacteria (1 bin)** — *Roseofilum reptotaenium* at 97.56% of the reference genome, the BBD-dominant cyanobacterium. *metabat.50*.
+-   **Cyanobacteria (1 bin)** — *Roseofilum reptotaenium* at 97.56% of the reference genome, the BBD-dominant cyanobacterium. Only present in metabat.50.
 
 Going by bin count, sulfur-cycling organisms dominate the community, which is consistent with the structure of BBD.
 
-**Give a brief summary of the results of `prokka` and `minpath` annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?**
+3. **Give a brief summary of the results of prokka and minpath annotation on this assembly. How many genes were identified by Prokka? Of these how many were assigned an EC number?**
 
-```{bash, eval=FALSE}
+```{bash, eval=FALSE, include=FALSE}
 cd prokka
 ls
 ls contig_119
@@ -418,7 +420,8 @@ cat ../minpath/*.ec|wc -l
 
 ```{r prokka EC count, echo=FALSE}
 prokka_ECcount <- readxl::read_xlsx("../prokka_minpath_result.xlsx", sheet = 1)
-datatable(prokka_ECcount, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
+datatable(prokka_ECcount, options = list(scrollX = TRUE, scrollCollapse = TRUE, paging = FALSE), rownames = FALSE,
+          caption = "Number of protein-coding genes and genes with an Enzyme Commission (EC) number.")
 ```
 
 <br/> Across the top 16 bins, 20,257 genes were identified by prokka, of which 5,196 (25%) were assigned an EC number. The rest of the genes are either non-enzymatic (structural, regulatory, or transport proteins) or enzymes without an EC classification. This is a normal proportion for prokaryotic genome annotation. Notably, the proportion of genes with an EC number is fairly stable (\~22–36%) regardless of bin completeness, suggesting Prokka's annotation rate isn't biased by fragmentation — though the absolute number of annotated pathways minpath can detect is still limited by how complete each genome is.
@@ -427,17 +430,30 @@ Feeding these EC numbers into minpath produced pathway reports of very different
 
 ```{r distinct pathways for top 16 genes, echo=FALSE}
 pathways <- readxl::read_xlsx("../prokka_minpath_result.xlsx", sheet = 2)
-datatable(pathways, options = list(scrollX = TRUE, scrollY = "400px", scrollCollapse = TRUE, paging = FALSE), rownames = FALSE)
+datatable(pathways, options = list(scrollX = TRUE, scrollCollapse = TRUE, paging = FALSE), rownames = FALSE,
+          caption = "Number of unique enzyme coding pathways.")
 ```
 
-<br/> Pathway richness tracks closely with genome completeness and size — the two \>97%-complete bins (*metabat.50*, *contig_119*) have a far richer metabolic annotation. This is a useful caveat for interpreting the lower-completeness bins: absence of a pathway there more likely reflects incomplete genome recovery than a real absence of that metabolic capacity.
+<br/> Pathway richness tracks closely with genome completeness and size — the two \>97%-complete bins (metabat.50, contig_119) have a far richer metabolic annotation. This is a useful caveat for interpreting the lower-completeness bins: absence of a pathway there more likely reflects incomplete genome recovery than a real absence of that metabolic capacity.
 
 ## Discussion
 
-**Comment on the quality of your assembly compared with previously published results using Illumina data from Sato et al. Can you identify bins representing key bacterial taxa that are found in both assemblies? Are there any highly complete bins in one assembly that do not have a clear match in the other assembly? For bins that match across assemblies how to the completeness and contamination statistics compare?**
+**Comment on the quality of your assembly compared with previously published results using Illumina data from Sato et al. 2025. Can you identify bins representing key bacterial taxa that are found in both assemblies? Are there any highly complete bins in one assembly that do not have a clear match in the other assembly? For bins that match across assemblies how to the completeness and contamination statistics compare?**
 
 Sato et al. assembled short-read metagenomes with curated bins using CheckM with tetranucleotide composition and differential cover. If we compare taxonomy at the genus level, there is clear overlap with this nanopore assembly:
 
--   **Cyanobacteria**: 
+-   **Cyanobacteria** - Sato et al.'s dominant BBD cyanobacterium ("Cya2") shared 99% 16S identity with a previously sequenced Caribbean BBC cyanobacterium identified as *Roseofilum reptotaenium*. This directly matches metabat.50, which was independently identified via GTDB-Tk as *Roseofilum reptotaenium* at 97.56% completeness.
+-   **Sulfate reducers** - Sato found sulfate-reducing genes in BBD taxonomically dominated by Deltaproteobacteria, typically associated with *Desulfovibrio spp.*, previously believed to be the main sulfide producer in BBD lesions. This matches metabat.27 and metabat.23 (genus *Maridesulfovibrio*, closely related to *Desulfovibrio*).
+-   **Sulfide oxidisers/cyclers** - Sato found sulfide-oxidation genes predominantly expressed by Epsilonproteobacteria in BBD (now reclassified as Campylobacterota), with *Arcobacter* as the dominant genus. This assembly recovered several Campylobacterota bins in the family Arcobacteraceae (metabat.56, metabat.32, metabat.43 - genus *Halarcobacter*), a family-level match even though the genus is different.
+
+contig_119 doesn't correspond to any taxon Sato et al. highlighted as a major BBD component - their study actually found that Bacteroidetes were prominent in the precursor "cyanobacterial patch" stage rather than in BBD itself. Recovering such a highly complete Bacteroidota genome directly from a BBD lesion is worth mentioning — it may reflect genuine site-to-site variation (Orpheus Island vs. Pelorus Island, GBR) in BBD community composition, or could simply be that long-read assembly resolved a genome that fragmented out of reach in a short-read assembly.
+
+Completeness and contamination statistics for bins that match Sato et al. were very similar: for Cyanobacteria, my completeness was 97.56% in metabat.50 vs Sato's 98.22% in MAG07, and contamination was 0.67% for both. Qualitatively speaking, recovering two MAGs above 96% completeness with under 2% contamination from a single nanopore sequencing run is a strong outcome. Short-read assemblies often fragment complex or highly repetitive genomes (especially filamentous cyanobacteria like *Roseofilum*), so the near-single-contig, near-complete recovery achieved here for both dominant taxa likely represents a genuine improvement in assembly contiguity over the Illumina-based approach.
 
 **Comment on the results of pathway analysis with minpath. Which bin contains most of the genes required for photosynthesis? Which bin or bins are most likely to be contributing to sulfate reduction?**
+
+Photosynthesis I (PWY-101) was flagged in four bins: contig_119, metabat.27, metabat.48, and metabat.50. Of these, only metabat.50 is a possible carrier of this pathway - the other three have no capacity for oxygenic photosynthesis. Most of the non-cyanobacterial hits reported only 1-2 of the pathway's 4 required gene families found, indicating partial matches from individual genes shared across unrelated pathways (e.g. common electron-transport components) rather than genuine photosynthetic capacity. Therefore, only metabat.50 contains the genes required for photosynthesis, consistent with its taxonomic identity as the BBD-dominant cyanobacterium.
+
+Sulfate/sulfite reduction (PWY-5360, the superpathway of tetrathionate reduction) was found only in metabat.56 - *Halarcobacter* (family Arcobacteraceae) and Campylobacterota, a genus more often associated with sulfide oxidation than reduction. This is an unexpected result; Campylobacterota are known to cycle sulfur compounds depending on conditions, so while this finding isn't unrealistic, it's not a common sulfate reducer.
+
+None of the well-known sulfate-reducing bins identified taxonomically in this assembly - the Desulfobacterota bins metabat.23 and metabat.27 (*Maridesulfovibrio*), and metabat.41, metabat.42, metabat.2 — appear in the PWY-5360 results. This doesn't mean that sulfate-reduction capability was absent as we asked minpath about tetrathionate reduction specifically, and our likely sulfate reducers may simply run a different, unqueried pathway instead. Taxonomically, metabat.23 and metabat.27 are the strongest candidates for driving sulfate reduction in this community, since *Maridesulfovibrio* is closely related to *Desulfovibrio* — the genus Sato et al. identified as the primary sulfide producer in BBD lesions. This suggests minpath's single-pathway search under-represents the true sulfate-reducing potential of the assembly, and a broader search would likely involve more bins.
