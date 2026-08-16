@@ -3,9 +3,8 @@ pre code.language-bash,
 pre code.bash {
     background-color: #F5EFE1;
     border-radius: 4px;
-    padding: 1em;
+    padding: 0.5em;
     font-family: "SFMono-Regular", Consolas, Monaco, monospace;
-    font-size: 0.95em;
-    border: 1px solid #444;
+    font-size: 0.90em;
     overflow-x: auto;
 }
