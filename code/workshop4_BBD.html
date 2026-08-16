@@ -9,7 +9,7 @@
 <meta name="author" content="Katie Dyck">
 <meta name="dcterms.date" content="2026-07-15">
 
-<title>MB5370 Marine Genomics - Workshop 4</title>
+<title>Module 3: Marine Genomics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -6088,10 +6088,9 @@ pre code.language-bash,
 pre code.bash {
 background-color: #F5EFE1;
 border-radius: 4px;
-padding: 1em;
+padding: 0.5em;
 font-family: "SFMono-Regular", Consolas, Monaco, monospace;
-font-size: 0.80em;
-border: 1px solid #444;
+font-size: 0.90em;
 overflow-x: auto;
 }</style>
 </head>
@@ -6101,7 +6100,7 @@ overflow-x: auto;
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">MB5370 Marine Genomics - Workshop 4</h1>
+      <h1 class="title">Module 3: Marine Genomics</h1>
             <p class="subtitle lead">Black Band Disease</p>
                       </div>
   </div>
@@ -6188,31 +6187,38 @@ overflow-x: auto;
 <p>Many metagenome reads from BBD-infected corals are unable to be assigned to known species because reference genomes are incomplete. Improved metagenome assemblies could recover genomes from previously unknown microorganisms, improve current BBD databases, and provide scientists with a better understanding of microbial diversity in BBD communities around the world.</p>
 <section id="about-the-data" class="level3" data-number="1.1">
 <h3 data-number="1.1" class="anchored" data-anchor-id="about-the-data"><span class="header-section-number">1.1</span> About the data</h3>
-<p>The data used in this workshop is a subset from fresh BBD samples from infected <em>Acropora hyacynthus</em> individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer.</p>
-<p>From this subset of data we are going to try to generate a metagenome assembly. We will analyse the BBD metagenome.</p>
+<p>The data used in this workshop is a subset from a JCU student’s PhD project, which was published in 2025 (the paper can be found <a href="https://doi.org/10.1111/1462-2920.70219">here</a>). They obtained fresh BBD samples from infected <em>Acropora hyacynthus</em> individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer. We will be working with a subset of the complete data set with the intention of analysing the black band disease metagenome.</p>
 </section>
 </section>
 <section id="processing-log" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="processing-log"><span class="header-section-number">2</span> Processing Log</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this document, all yellow code chunks indicate bash (R Terminal) code input. Comments begin with <code>#</code>; these are listed for reference only, and should not be entered into the Terminal.</p>
+<p>All other code chunks indicate R code, which should be input into the Console.</p>
+</div>
+</div>
 <section id="step-1-assembly" class="level3" data-number="2.1">
 <h3 data-number="2.1" class="anchored" data-anchor-id="step-1-assembly"><span class="header-section-number">2.1</span> Step 1: Assembly</h3>
 <p><code>flye</code>’s job is to look at each DNA sequence and assemble them into longer sequences called a <strong>contig</strong>.</p>
 <p>(All outputs from this step will be saved inside a directory called <code>flye</code>, located in the main project directory.)</p>
 <p>Make a symbolic link (shortcut) to the BBD raw sequencing reads data (<code>bbd_0.1.fastq.gz .</code>) by entering the following line into the R terminal:</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Create a new shell script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/run_flye_bbd.sh" target="_blank"><code>run_flye_bbd.sh</code></a>, inside the <code>flye</code> directory with the appropriate code. Submit the job for this script.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbatch</span> run_flye_bbd.sh</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># `slurm-448.out` is my output file</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Before assembly, we just had millions of disconnected reads and information about which taxa are present. After assembly, we have much longer DNA sequences that can be grouped into MAGs, annotated to identify genes and metabolic pathways, and used to determine which organisms carry genes for sulfur metabolism, toxin production, or other functions. This is why metagenome assembly is a crucial step: it bridges the gap between identifying who is present in the BBD community and understanding what those organisms are capable of doing.</p>
 </section>
@@ -6221,24 +6227,18 @@ overflow-x: auto;
 <p>(All outputs from this step will be saved inside a directory called <code>metabat</code>, located in the main project directory.)</p>
 <p>The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: <span class="math display">\[\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}\]</span> Right now we have a file with thousands of contigs (<a href="https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt" target="_blank"><code>assembly_info.txt</code></a>) and we don’t know which organisms belong with which contig. We will use metabat to sort the contigs into “bins”. The hope is that each bin represents one genome.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the depth information for each contig</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ../flye/bbd/assembly_info.txt  <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> <span class="st">&#39;#&#39;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{OFS=&quot;\t&quot;;print $1,$3}&#39;</span> <span class="op">&gt;</span> depths_bbd.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ul>
 <li><strong>Depth</strong> is the average number of sequencing reads that cover any given region in a contig. (For example, a contig that has been sequenced 10 times has a greater depth than a contig that has only been sequenced 2 times.) It is useful for helping metabat group contigs together as contigs with very similar depths are most likely from the same organism.</li>
 </ul>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder contigs based on their depth</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> depths_bbd.txt <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span> <span class="kw">|</span> <span class="fu">xargs</span> samtools faidx ../flye/bbd/assembly.fasta <span class="op">&gt;</span> assembly_bbd_ordered.fasta</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run metabat</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">metabat2</span> <span class="at">-i</span> assembly_bbd_ordered.fasta <span class="at">-a</span> depths_bbd.txt <span class="at">--cvExt</span> <span class="at">-o</span> bins_bbd/metabat <span class="at">--seed</span> 5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ul>
 <li>The output from running metabat was: <span style="font-family: &#39;Courier New&#39;, Courier, monospace;"><strong>67 bins (39299051 bases in total) formed</strong></span></li>
@@ -6255,14 +6255,11 @@ overflow-x: auto;
 <p>Within the <code>checkm</code> folder, create a new directory called <code>bins_bbd</code>.</p>
 <p>Run this code in the R terminal so that checkm will analyse contig_119 alongside the other metabat bins.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the metabat bins into the &#39;bins_bbd&#39; folder</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> ../metabat/bins_bbd/<span class="pp">*</span>.fa bins_bbd/</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the largest contig in the assembly and save it as its own fasta file (.fa)</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> faidx ../flye/bbd/assembly.fasta contig_119 <span class="op">&gt;</span> bins_bbd/contig_119.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Create a new slurm script, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/run_checkm_bbd.sh" target="_blank"><code>run_checkm_bbd.sh</code></a>, and save it in the <code>checkm</code> directory. Submit the job through the terminal.</p>
 </section>
@@ -6273,20 +6270,14 @@ overflow-x: auto;
 <p><strong>A good genome has high completeness and low contamination.</strong></p>
 <p>We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the “Completeness” column in <code>checkm_results_bbd.txt</code> to assess these results. We will focus on bins with a completeness greater than 15%. Run the code below through the R terminal to find these bins.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> checkm_results_bbd.txt <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;$13&gt;15&#39;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># We are only concerned with the bin ID column</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> checkm_results_bbd.txt <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;$13&gt;15{print $1}&#39;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Save the output of these commands to a file, <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/bbd_topbins.txt" target="_blank"><code>bbd_topbins.txt</code></a>, so we can continue using it in our analysis.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> checkm_results_bbd.txt <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;$13&gt;15{print $1}&#39;</span> <span class="op">&gt;</span> bbd_topbins.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 <section id="step-5-perform-taxonomic-classification-with-gtdbtk" class="level3" data-number="2.5">
@@ -6296,14 +6287,11 @@ overflow-x: auto;
 <li>We’ll create a subfolder within the <code>gtdbtk</code> folder called <code>genomes</code>. Here we will save a copy of each of the top bins identified in step 4.</li>
 </ul>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Iterate over our list of top bins</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For each bin we want to copy a file corresponding to that bin into the `genomes` folder</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> <span class="bu">echo</span> <span class="va">$bin</span><span class="kw">;</span><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> <span class="bu">echo</span> <span class="st">&quot;../metabat/bins_bbd/</span><span class="va">${bin}</span><span class="st">.fa&quot;</span><span class="kw">;</span><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> <span class="fu">cp</span> <span class="st">&quot;../metabat/bins_bbd/</span><span class="va">${bin}</span><span class="st">.fa&quot;</span> genomes<span class="kw">;</span><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Now we will run the classification workflow. Create a shell script inside the <code>gtdbtk</code> folder called <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/run_gtdbtk.sh" target="_blank"><code>run_gtdbtk.sh</code></a>, insert the appropriate code, and submit it through the terminal.</p>
 <p>The output of this file is saved in <a href="https://github.com/katiedyck/Marine-Genomics/blob/main/gtdbtk/out/classify/gtdbtk.bac120.summary.tsv" target="_blank"><code>gtdbtk.bac120.summary.tsv</code></a>.</p>
@@ -6314,11 +6302,8 @@ overflow-x: auto;
 <p>All outputs from this step will be saved inside a directory called <code>prokka</code>, located in the main project directory.</p>
 <p>First, we want to run prokka for a single bin. Identify the first bin ID from <code>bbd_topbins.txt</code>, then run the following code through the terminal:</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">bin</span><span class="op">=</span>contig_119</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">prokka</span> <span class="at">--outdir</span> <span class="va">$bin</span> <span class="at">--prefix</span> <span class="va">$bin</span>  ../metabat/bins_bbd/<span class="va">${bin}</span>.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Running this creates a folder <code>contig_119</code>, which contains the output file <code>contig_119.tsv</code> with the name of each gene and its name and functional information.</p>
 <p>Create a blank shell script called <code>run_prokka.sh</code> in the <code>prokka</code> directory with the appropriate code. Run the job through the terminal.</p>
@@ -6335,10 +6320,7 @@ overflow-x: auto;
 </ul>
 <p>We are only interested in lines with an EC number. This output is saved in the file <code>contig_119.ec</code>. We run minpath on this file by entering this command in the terminal:</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">minpath</span> <span class="at">-ec</span> contig_119.ec <span class="at">-report</span> contig_119.ec.report <span class="at">-details</span> contig_119.ec.details</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>In the <code>contig_119.ec.report</code>:</p>
 <ul>
@@ -6349,60 +6331,41 @@ overflow-x: auto;
 </ul>
 <p>Run the following code in the terminal (once the prokka job is finished running) to prepare minpath inputs for each bin:</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span> ../prokka/<span class="va">$bin</span>/<span class="va">${bin}</span>.tsv <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span> <span class="st">&#39;\t&#39;</span> <span class="st">&#39;$5{printf(&quot;%s\t%s\n&quot;, $1,$5)}&#39;</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> <span class="st">&#39;^locus&#39;</span> <span class="op">&gt;</span> <span class="va">${bin}</span>.ec </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Next, run the code below in the terminal to run minpath on every bin:</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">bin</span><span class="kw">;</span><span class="cf">do</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">minpath</span> <span class="at">-ec</span> <span class="va">${bin}</span>.ec <span class="at">-report</span> <span class="va">${bin}</span>.ec.report <span class="at">-details</span> <span class="va">${bin}</span>.ec.details</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ../checkm/bbd_topbins.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Two pathways from the output are of interest to us.</p>
 <ol type="1">
 <li><strong>Photosynthesis light reactions</strong> (metacyc code <code>PWY-101</code>) - this includes all the components necessary for photosynthesis that take place in light, Photosystem I, and Photosystem II.</li>
 </ol>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;PWY-101&#39;</span> <span class="pp">*</span>.ec.report</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><code>PWY-101</code> is found in contig_119, metabat.27, metabat.48, and metabat.50.</p>
 <p>To view the taxonomy of bins containing this pathway, cross reference the results with the output from <code>gtdbtk</code>.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;contig_119&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;metabat.27&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;metabat.48&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;metabat.50&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <ol start="2" type="1">
 <li><a href="https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&amp;object=PWY-5360" target="_blank"><strong>Superpathway of tetrathionate reduction</strong></a> (metacyc code <code>PWY-5360</code>) - includes enzymes needed to reduce sulfite to hydrogen sulfide.</li>
 </ol>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;PWY-5360&#39;</span> <span class="pp">*</span>.ec.report</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><code>PWY-5360</code> is only found in metabat.56.</p>
 <p>We will cross-reference the results with the <code>gtdbtk</code> output to view the taxonomy of bins containing this pathway.</p>
 <div class="cell">
-<details open class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cross reference results with gtdbtk output</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;metabat.56&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&#39;metabat.56&#39;</span> ../gtdbtk/out/gtdbtk.bac120.summary.tsv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -6430,8 +6393,8 @@ overflow-x: auto;
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">caption =</span> <span class="st">&quot;GTDB-Tk and CheckM results for the top 16 genomes in the assembly.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-00e23edb2d8a01286df1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-00e23edb2d8a01286df1">{"x":{"filter":"none","vertical":false,"caption":"<caption>GTDB-Tk and CheckM results for the top 16 genomes in the assembly.<\/caption>","data":[["contig_119","metabat.11","metabat.14","metabat.2","metabat.23","metabat.24","metabat.27","metabat.3","metabat.32","metabat.41","metabat.42","metabat.43","metabat.47","metabat.48","metabat.50","metabat.56"],["d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Cytophagales;f__Bernardetiaceae;g__UBA2561;s__UBA2561 sp002340355","d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Chitinophagales;f__Saprospiraceae;g__Saprospira;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Poseidonibacter;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Desulfobacterota_I;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Maridesulfovibrio;s__","d__Bacteria;p__Firmicutes_A;c__Clostridia;o__Lachnospirales;f__Vallitaleaceae;g__;s__","d__Bacteria;p__Desulfobacterota_I;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Maridesulfovibrio;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Sulfurospirillaceae;g__Sulfurospirillum_A;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__","d__Bacteria;p__Firmicutes_A;c__Clostridia;o__Peptostreptococcales;f__Acidaminobacteraceae;g__JABXKX01;s__","d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Flavobacteriales;f__Flavobacteriaceae;g__DT-34;s__","d__Bacteria;p__Cyanobacteria;c__Cyanobacteriia;o__Cyanobacteriales;f__Desertifilaceae;g__Roseofilum;s__Roseofilum reptotaenium_A","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__"],[47,5449,5449,5449,5449,172,61,115,5449,83,83,138,304,47,82,138],[454,104,104,102,104,263,284,395,104,247,247,338,247,571,579,338],[9,90,88,88,90,198,207,284,85,169,185,260,196,323,11,230],[438,14,16,14,14,65,77,111,19,77,62,78,50,248,565,108],[7,0,0,0,0,0,0,0,0,1,0,0,1,0,3,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[97.62,20.69,21.55,19.64,22.41,22.6,26.36,22.41,29.31,28.18,20.79,19.73,20.57,35.97,97.56,30.28],[1.64,0,0,0,0,0,0,0,0,0.13,0,0,0.35,0,0.67,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin ID<\/th>\n      <th>Organism<\/th>\n      <th># Genomes<\/th>\n      <th># Markers<\/th>\n      <th>0<\/th>\n      <th>1<\/th>\n      <th>2<\/th>\n      <th>3<\/th>\n      <th>4<\/th>\n      <th>5+<\/th>\n      <th>Completeness %<\/th>\n      <th>Contamination %<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11]},{"name":"Bin ID","targets":0},{"name":"Organism","targets":1},{"name":"# Genomes","targets":2},{"name":"# Markers","targets":3},{"name":"0","targets":4},{"name":"1","targets":5},{"name":"2","targets":6},{"name":"3","targets":7},{"name":"4","targets":8},{"name":"5+","targets":9},{"name":"Completeness %","targets":10},{"name":"Contamination %","targets":11}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5e7f27468df8f86d2632" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5e7f27468df8f86d2632">{"x":{"filter":"none","vertical":false,"caption":"<caption>GTDB-Tk and CheckM results for the top 16 genomes in the assembly.<\/caption>","data":[["contig_119","metabat.11","metabat.14","metabat.2","metabat.23","metabat.24","metabat.27","metabat.3","metabat.32","metabat.41","metabat.42","metabat.43","metabat.47","metabat.48","metabat.50","metabat.56"],["d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Cytophagales;f__Bernardetiaceae;g__UBA2561;s__UBA2561 sp002340355","d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Chitinophagales;f__Saprospiraceae;g__Saprospira;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Poseidonibacter;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Desulfobacterota_I;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Maridesulfovibrio;s__","d__Bacteria;p__Firmicutes_A;c__Clostridia;o__Lachnospirales;f__Vallitaleaceae;g__;s__","d__Bacteria;p__Desulfobacterota_I;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Maridesulfovibrio;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Sulfurospirillaceae;g__Sulfurospirillum_A;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulforegulaceae;g__;s__","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__","d__Bacteria;p__Firmicutes_A;c__Clostridia;o__Peptostreptococcales;f__Acidaminobacteraceae;g__JABXKX01;s__","d__Bacteria;p__Bacteroidota;c__Bacteroidia;o__Flavobacteriales;f__Flavobacteriaceae;g__DT-34;s__","d__Bacteria;p__Cyanobacteria;c__Cyanobacteriia;o__Cyanobacteriales;f__Desertifilaceae;g__Roseofilum;s__Roseofilum reptotaenium_A","d__Bacteria;p__Campylobacterota;c__Campylobacteria;o__Campylobacterales;f__Arcobacteraceae;g__Halarcobacter;s__"],[47,5449,5449,5449,5449,172,61,115,5449,83,83,138,304,47,82,138],[454,104,104,102,104,263,284,395,104,247,247,338,247,571,579,338],[9,90,88,88,90,198,207,284,85,169,185,260,196,323,11,230],[438,14,16,14,14,65,77,111,19,77,62,78,50,248,565,108],[7,0,0,0,0,0,0,0,0,1,0,0,1,0,3,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[97.62,20.69,21.55,19.64,22.41,22.6,26.36,22.41,29.31,28.18,20.79,19.73,20.57,35.97,97.56,30.28],[1.64,0,0,0,0,0,0,0,0,0.13,0,0,0.35,0,0.67,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin ID<\/th>\n      <th>Organism<\/th>\n      <th># Genomes<\/th>\n      <th># Markers<\/th>\n      <th>0<\/th>\n      <th>1<\/th>\n      <th>2<\/th>\n      <th>3<\/th>\n      <th>4<\/th>\n      <th>5+<\/th>\n      <th>Completeness %<\/th>\n      <th>Contamination %<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11]},{"name":"Bin ID","targets":0},{"name":"Organism","targets":1},{"name":"# Genomes","targets":2},{"name":"# Markers","targets":3},{"name":"0","targets":4},{"name":"1","targets":5},{"name":"2","targets":6},{"name":"3","targets":7},{"name":"4","targets":8},{"name":"5+","targets":9},{"name":"Completeness %","targets":10},{"name":"Contamination %","targets":11}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p><br> On all 16 bins that are above 15% completeness, they cluster into 5 phyla, with sulfur-cycling bacteria dominating by bin count:</p>
@@ -6448,16 +6411,16 @@ overflow-x: auto;
 </ol>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-881cf3226202c1be3bae" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-881cf3226202c1be3bae">{"x":{"filter":"none","vertical":false,"caption":"<caption>Number of protein-coding genes and genes with an Enzyme Commission (EC) number.<\/caption>","data":[["contig_119","metabat.50","metabat.47","metabat.48","metabat.27","metabat.3","metabat.32","metabat.56","metabat.41","metabat.42","metabat.23","metabat.24","metabat.14","metabat.43","metabat.2","metabat.11"],[3913,5502,1476,1173,1215,1033,856,949,732,634,491,398,616,476,492,301],[920,1384,320,305,303,284,251,248,227,176,147,142,142,132,130,85],[0.235,0.252,0.217,0.26,0.249,0.275,0.293,0.261,0.31,0.278,0.299,0.357,0.231,0.277,0.264,0.282]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin<\/th>\n      <th># Protein-Coding Genes (Prokka)<\/th>\n      <th>Genes w/ EC number<\/th>\n      <th>% with EC<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"Bin","targets":0},{"name":"# Protein-Coding Genes (Prokka)","targets":1},{"name":"Genes w/ EC number","targets":2},{"name":"% with EC","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-edf8583b2e52f688c32f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-edf8583b2e52f688c32f">{"x":{"filter":"none","vertical":false,"caption":"<caption>Number of protein-coding genes and genes with an Enzyme Commission (EC) number.<\/caption>","data":[["contig_119","metabat.50","metabat.47","metabat.48","metabat.27","metabat.3","metabat.32","metabat.56","metabat.41","metabat.42","metabat.23","metabat.24","metabat.14","metabat.43","metabat.2","metabat.11"],[3913,5502,1476,1173,1215,1033,856,949,732,634,491,398,616,476,492,301],[920,1384,320,305,303,284,251,248,227,176,147,142,142,132,130,85],[0.235,0.252,0.217,0.26,0.249,0.275,0.293,0.261,0.31,0.278,0.299,0.357,0.231,0.277,0.264,0.282]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin<\/th>\n      <th># Protein-Coding Genes (Prokka)<\/th>\n      <th>Genes w/ EC number<\/th>\n      <th>% with EC<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"Bin","targets":0},{"name":"# Protein-Coding Genes (Prokka)","targets":1},{"name":"Genes w/ EC number","targets":2},{"name":"% with EC","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p><br> Across the top 16 bins, 20,257 genes were identified by prokka, of which 5,196 (25%) were assigned an EC number. The rest of the genes are either non-enzymatic (structural, regulatory, or transport proteins) or enzymes without an EC classification. This is a normal proportion for prokaryotic genome annotation. Notably, the proportion of genes with an EC number is fairly stable (~22–36%) regardless of bin completeness, suggesting Prokka’s annotation rate isn’t biased by fragmentation — though the absolute number of annotated pathways minpath can detect is still limited by how complete each genome is.</p>
 <p>Feeding these EC numbers into minpath produced pathway reports of very different sizes depending on genome completeness:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-71093407e07ab50ede33" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-71093407e07ab50ede33">{"x":{"filter":"none","vertical":false,"caption":"<caption>Number of unique enzyme coding pathways.<\/caption>","data":[["metabat.50","contig_119","metabat.48","metabat.47","metabat.27","metabat.41","metabat.56","metabat.42","metabat.32","metabat.3","metabat.11","metabat.2","metabat.43","metabat.23","metabat.14"],[556,527,374,320,303,300,291,255,239,204,167,158,155,152,129]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin<\/th>\n      <th>Distinct pathways reported by minpath<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Bin","targets":0},{"name":"Distinct pathways reported by minpath","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-98acb2ff2ac953b51df1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-98acb2ff2ac953b51df1">{"x":{"filter":"none","vertical":false,"caption":"<caption>Number of unique enzyme coding pathways.<\/caption>","data":[["metabat.50","contig_119","metabat.48","metabat.47","metabat.27","metabat.41","metabat.56","metabat.42","metabat.32","metabat.3","metabat.11","metabat.2","metabat.43","metabat.23","metabat.14"],[556,527,374,320,303,300,291,255,239,204,167,158,155,152,129]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Bin<\/th>\n      <th>Distinct pathways reported by minpath<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"scrollCollapse":true,"paging":false,"columnDefs":[{"className":"dt-right","targets":1},{"name":"Bin","targets":0},{"name":"Distinct pathways reported by minpath","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p><br> Pathway richness tracks closely with genome completeness and size — the two &gt;97%-complete bins (metabat.50, contig_119) have a far richer metabolic annotation. This is a useful caveat for interpreting the lower-completeness bins: absence of a pathway there more likely reflects incomplete genome recovery than a real absence of that metabolic capacity.</p>

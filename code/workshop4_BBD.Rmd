@@ -1,5 +1,5 @@
 ---
-title: "MB5370 Marine Genomics - Workshop 4"
+title: "Module 3: Marine Genomics"
 subtitle: "Black Band Disease"
 author: "Katie Dyck"
 date: 2026-07-15
@@ -70,11 +70,15 @@ Many metagenome reads from BBD-infected corals are unable to be assigned to know
 
 ### About the data
 
-The data used in this workshop is a subset from fresh BBD samples from infected *Acropora hyacynthus* individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer.
-
-From this subset of data we are going to try to generate a metagenome assembly. We will analyse the BBD metagenome.
+The data used in this workshop is a subset from a JCU student's PhD project, which was published in 2025 (the paper can be found [here](https://doi.org/10.1111/1462-2920.70219)). They obtained fresh BBD samples from infected *Acropora hyacynthus* individuals at Orpheus Island. The molecular weight DNA was extracted and sequenced with an oxford nanopore MinION sequencer. We will be working with a subset of the complete data set with the intention of analysing the black band disease metagenome. 
 
 ## Processing Log
+
+::: {.callout-important icon=FALSE}
+In this document, all yellow code chunks indicate bash (R Terminal) code input. Comments begin with `#`; these are listed for reference only, and should not be entered into the Terminal.
+
+All other code chunks indicate R code, which should be input into the Console.
+:::
 
 ### Step 1: Assembly
 
@@ -90,6 +94,8 @@ cd flye
 Make a symbolic link (shortcut) to the BBD raw sequencing reads data (`bbd_0.1.fastq.gz .`) by entering the following line into the R terminal:
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 ln -s /pvol/data/metagenome_assembly/bbd_0.1.fastq.gz .
 ```
 
@@ -108,6 +114,8 @@ echo "Finished flye bbd in $(pwd) at $(date)"
 ```
 
 ```{bash submit job, eval=FALSE}
+#| code-fold: false
+
 sbatch run_flye_bbd.sh
 
 # `slurm-448.out` is my output file
@@ -122,6 +130,8 @@ Before assembly, we just had millions of disconnected reads and information abou
 The goal of this step is to go from contigs to individual microbial genomes. The workflow can be visualised like this: $$\text{Raw DNA reads} \rightarrow \text{Assembly} \rightarrow \text{Contigs} \rightarrow \text{Binning} \rightarrow \text{Metagenome-Assembled Genomes (MAGs)}$$ Right now we have a file with thousands of contigs ([`assembly_info.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/flye/bbd/assembly_info.txt){target="_blank"}) and we don't know which organisms belong with which contig. We will use metabat to sort the contigs into "bins". The hope is that each bin represents one genome.
 
 ```{bash binning, eval=FALSE}
+#| code-fold: false
+
 # Extract the depth information for each contig
 cat ../flye/bbd/assembly_info.txt  | grep -v '#' | awk '{OFS="\t";print $1,$3}' > depths_bbd.txt
 ```
@@ -129,6 +139,8 @@ cat ../flye/bbd/assembly_info.txt  | grep -v '#' | awk '{OFS="\t";print $1,$3}' 
 -   **Depth** is the average number of sequencing reads that cover any given region in a contig. (For example, a contig that has been sequenced 10 times has a greater depth than a contig that has only been sequenced 2 times.) It is useful for helping metabat group contigs together as contigs with very similar depths are most likely from the same organism.
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 # Reorder contigs based on their depth
 cat depths_bbd.txt | awk '{print $1}' | xargs samtools faidx ../flye/bbd/assembly.fasta > assembly_bbd_ordered.fasta
 
@@ -157,6 +169,8 @@ Within the `checkm` folder, create a new directory called `bins_bbd`.
 Run this code in the R terminal so that checkm will analyse contig_119 alongside the other metabat bins.
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 # Copy the metabat bins into the 'bins_bbd' folder
 cp ../metabat/bins_bbd/*.fa bins_bbd/
 
@@ -192,6 +206,8 @@ The results of the checkm bin quality check can be found in the text file [`chec
 We want to look at the most complete bins as they are most likely to contain most of the useful information on the function of BBD. These bins tend to correspond to the most abundant (and best assembled) members of the community. We will use the "Completeness" column in `checkm_results_bbd.txt` to assess these results. We will focus on bins with a completeness greater than 15%. Run the code below through the R terminal to find these bins.
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 cat checkm_results_bbd.txt | awk '$13>15'
 
 # We are only concerned with the bin ID column
@@ -201,6 +217,8 @@ cat checkm_results_bbd.txt | awk '$13>15{print $1}'
 Save the output of these commands to a file, [`bbd_topbins.txt`](https://github.com/katiedyck/Marine-Genomics/blob/main/checkm/bbd_topbins.txt){target="_blank"}, so we can continue using it in our analysis.
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 cat checkm_results_bbd.txt | awk '$13>15{print $1}' > bbd_topbins.txt
 ```
 
@@ -211,6 +229,8 @@ All outputs from this step will be saved inside a directory called `gtdbtk`, loc
 -   We'll create a subfolder within the `gtdbtk` folder called `genomes`. Here we will save a copy of each of the top bins identified in step 4.
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 # Iterate over our list of top bins
 # For each bin we want to copy a file corresponding to that bin into the `genomes` folder
 while read bin;do echo $bin;done < ../checkm/bbd_topbins.txt
@@ -246,6 +266,8 @@ All outputs from this step will be saved inside a directory called `prokka`, loc
 First, we want to run prokka for a single bin. Identify the first bin ID from `bbd_topbins.txt`, then run the following code through the terminal:
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 bin=contig_119
 prokka --outdir $bin --prefix $bin  ../metabat/bins_bbd/${bin}.fa
 ```
@@ -290,6 +312,8 @@ We will use the `contig_119.tsv` file to prepare inputs for minpath. Within this
 We are only interested in lines with an EC number. This output is saved in the file `contig_119.ec`. We run minpath on this file by entering this command in the terminal:
 
 ```{bash, eval=FALSE}
+#| code-fold: false
+
 minpath -ec contig_119.ec -report contig_119.ec.report -details contig_119.ec.details
 ```
 
@@ -303,6 +327,8 @@ In the `contig_119.ec.report`:
 Run the following code in the terminal (once the prokka job is finished running) to prepare minpath inputs for each bin:
 
 ```{bash prep minpath inputs, eval=FALSE}
+#| code-fold: false
+
 while read bin;do 
   cat ../prokka/$bin/${bin}.tsv | awk -F '\t' '$5{printf("%s\t%s\n", $1,$5)}' | grep -v '^locus' > ${bin}.ec 
 done < ../checkm/bbd_topbins.txt
@@ -311,6 +337,8 @@ done < ../checkm/bbd_topbins.txt
 Next, run the code below in the terminal to run minpath on every bin:
 
 ```{bash run minpath on bins, eval=FALSE}
+#| code-fold: false
+
 while read bin;do 
   minpath -ec ${bin}.ec -report ${bin}.ec.report -details ${bin}.ec.details
 done < ../checkm/bbd_topbins.txt
@@ -321,6 +349,8 @@ Two pathways from the output are of interest to us.
 1.  **Photosynthesis light reactions** (metacyc code `PWY-101`) - this includes all the components necessary for photosynthesis that take place in light, Photosystem I, and Photosystem II.
 
 ```{bash search photosynthesis, eval=FALSE}
+#| code-fold: false
+
 grep 'PWY-101' *.ec.report
 ```
 
@@ -329,6 +359,8 @@ grep 'PWY-101' *.ec.report
 To view the taxonomy of bins containing this pathway, cross reference the results with the output from `gtdbtk`.
 
 ```{bash view bin taxonomy, eval=FALSE}
+#| code-fold: false
+
 grep 'contig_119' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 grep 'metabat.27' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 grep 'metabat.48' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
@@ -338,6 +370,8 @@ grep 'metabat.50' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 2.  [**Superpathway of tetrathionate reduction**](https://biocyc.org/META/NEW-IMAGE?type=PATHWAY&object=PWY-5360){target="_blank"} (metacyc code `PWY-5360`) - includes enzymes needed to reduce sulfite to hydrogen sulfide.
 
 ```{bash search tetrathionate, eval=FALSE}
+#| code-fold: false
+
 grep 'PWY-5360' *.ec.report
 ```
 
@@ -346,7 +380,8 @@ grep 'PWY-5360' *.ec.report
 We will cross-reference the results with the `gtdbtk` output to view the taxonomy of bins containing this pathway.
 
 ```{bash view tetrathionate bin taxonomy, eval=FALSE}
-# Cross reference results with gtdbtk output
+#| code-fold: false
+
 grep 'metabat.56' ../gtdbtk/out/gtdbtk.bac120.summary.tsv
 ```
 
