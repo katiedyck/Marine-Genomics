@@ -12,6 +12,10 @@ This repository documents four computer workshops from the JCU MB5370 Marine Gen
 
 Workshops 1–3 focus on core skills (Unix, R, assembly, binning, QC) using either no data or a simplified mock community. Workshop 4 is the assessable piece — it applies the full pipeline to a real disease metagenome and pushes into functional annotation and pathway inference.
 
+## Reference
+
+Sato, Y., Ling, E. Y. S., Turaev, D., Laffy, P., Weynberg, K. D., Rattei, T., Willis, B. L., & Bourne, D. G. (2017). Unraveling the microbial processes of black band disease in corals through integrated genomics. _Scientific Reports_, _7_(1), Article 40455. [https://doi.org/10.1038/srep40455]
+
 ## Brief Description of Files and Folders
 
 Figures and files generated during workshop 2 and workshop 3 are saved in folders `workshop2` and `workshop3`, respectively.
@@ -42,6 +46,16 @@ Genome assembly from raw Nanopore reads (`bbd_0.1.fastq.gz`) using [Flye](https:
 - `bbd_topbins.txt` — the filtered list of bin IDs kept for downstream analysis (completeness > 15%), which is what `gtdbtk`, `prokka`, and minpath are actually run on
 
 [`gtdbtk/`](https://github.com/katiedyck/Marine-Genomics/tree/main/gtdbtk)
-**Taxonomic classification** — runs [GTDB-Tk](https://github.com/Ecogenomics/GTDBTk) `classify_wf` on the top-quality bins to assign genome-based taxonomy (family/genus/species where possible) using the GTDB reference database.
+**Taxonomic classification** ("Who's there?") — runs [GTDB-Tk](https://github.com/Ecogenomics/GTDBTk) `classify_wf` on the top-quality bins to assign genome-based taxonomy (family/genus/species where possible) using the GTDB reference database.
 - `run_gtdbtk.sh` — the slurm script that runs GTDB-Tk
 - `out/classify/gtdbtk.bac120.summary.tsv` — the taxonomy call for each bin, used later to link functional findings back to specific taxa (e.g. confirming which bin is the sulfate-reducing _Desulfovibrio_ or the cyanobacterial photosynthesizer)
+
+[`prokka/`](https://github.com/katiedyck/Marine-Genomics/tree/main/prokka)
+**Gene finding and annotation** ("What genes do they have?") — runs [Prokka](https://github.com/tseemann/prokka) on each top bin to identify open reading frames and annotate them by homology, assigning gene names, EC numbers, and COG IDs where possible.
+- `run_prokka.sh` — the slurm script that loops Prokka over every bin in `checkm/bbd_topbins.txt`
+- One `.tsv` (gene annotation table) and `.txt` (annotation summary stats) per bin — the .tsv is the key file, used directly in `minpath` below
+
+[`minpath/`](https://github.com/katiedyck/Marine-Genomics/tree/main/minpath)
+**Pathway inference** ("What can they do biochemically?") — takes the EC numbers from each bin's Prokka `.tsv` output and runs [MinPath](https://github.com/mgtools/MinPath) to infer the minimal set of MetaCyc metabolic pathways consistent with the annotated genes present in that bin.
+- One `.ec.report` (pathway-level summary: which pathways were found, how many marker gene families support each) and `.ec.details` (gene-level detail behind each pathway call) per bin
+Used to check for expected BBD community functions — e.g. photosynthesis (PWY-101, expected in cyanobacteria) and sulfate/sulfite reduction (PWY-5360, expected in _Desulfovibrio_-like taxa) — and to cross-reference which taxonomic bins (via `gtdbtk`) carry which pathways.
