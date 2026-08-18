@@ -47,7 +47,7 @@ The table below shows the relative abundance (`Proportion of Reads`) of each spe
 For the purposes of metagenomic assembly we note the number of chromosomes, total genome size and its GC content. We will use these pieces of information later to assess our preliminary assembly results.
 
 | Proportion of Reads | Species | Accession | Number of chromosomes | Size | GC Content |
-|------------|------------|------------|------------|------------|------------|
+|----|----|----|----|----|----|
 | 44.5 | Geitlerinema sp. PCC 7407 | ASM31704v1 | 1 | 4.7Mb | 58 |
 | 30 | Vibrio alfacsensis | ASM1967048v1 | 2 | 5.3Mb | 44 |
 | 7.5 | Vibrio algicola | ASM960176v2 | 3 | 3.5Mb | 42 |
