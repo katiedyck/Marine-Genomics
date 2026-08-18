@@ -3,7 +3,28 @@ title: "MB5370 Marine Genomics - Workshop 1"
 subtitle: "Introduction"
 author: "Katie Dyck"
 date: "2026-07-07"
-output: html_document
+format:
+  html:
+      df-scroll: true
+      df-print: paged
+      css: styles.css
+      embed-resources: true
+      code-fold: show
+      code-copy: hover
+      code-block-bg: true
+      code-block-border-left: "grey25"
+      toc: true
+      number-sections: true
+      number-depth: 4
+      toc-location: left
+      toc-expand: 3
+      toc-title: Contents
+      syntax-highlighting: github
+      theme: cosmo
+      title-block-banner: true
+      fig-height: 6
+      fig-width: 10
+      fig-cap-location: bottom
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +40,9 @@ knitr::opts_chunk$set(echo = TRUE)
 # ***** Connected to GitHub using a SSH key. *****
 ```
 
-Workshop instructions: <https://mb5370.bioinformatics.guide/2026/workshop1/workshop_1.html>
+::: {.callout-note}
+In this document, all yellow code chunks indicate bash (R Terminal) code input. Comments begin with `#`; these are listed for reference only, and should not be entered into the Terminal.
+:::
 
 ## Command Line Basics
 
@@ -101,7 +124,7 @@ There are 2 common formats for storing sequence information.
 * Each entry has a title line & sequence. Multiple entries can be stored in a single file.
 
 ```{r fasta_fig, echo=FALSE, out.width="90%"}
-knitr::include_graphics("../visuals/fasta.png")
+knitr::include_graphics("../images/fasta.png")
 ```
 
 ### FASTQ Format
@@ -109,5 +132,5 @@ knitr::include_graphics("../visuals/fasta.png")
 Designed for storing sequencing data along with quality scores. Standard formatting for many types of sequencing (e.g. Illumina short reads, Nanopore or PacBio longer reads). More information: https://en.wikipedia.org/wiki/FASTQ_format.
 
 ```{r fastq_fig, echo=FALSE, out.width="90%"}
-knitr::include_graphics("../visuals/fastq.png")
+knitr::include_graphics("../images/fastq.png")
 ```
