@@ -14,7 +14,7 @@ Workshops 1–3 focus on core skills (Unix, R, assembly, binning, QC) using eith
 
 ## Reference
 
-Sato, Y., Ling, E. Y. S., Turaev, D., Laffy, P., Weynberg, K. D., Rattei, T., Willis, B. L., & Bourne, D. G. (2017). Unraveling the microbial processes of black band disease in corals through integrated genomics. _Scientific Reports_, _7_(1), Article 40455. https://doi.org/10.1038/srep40455 
+Hung, J. Y., Cooke, I., Sato, Y., Miller, D. J., & Bourne, D. G. (2026). Microbial Metabolism and Disease Virulence Changes Across Day and Night in Coral Black Band Disease Lesions. _Environmental Microbiology, 28_(2), e70219-n/a. https://doi.org/10.1111/1462-2920.70219
 
 ## Brief Description of Files and Folders
 
