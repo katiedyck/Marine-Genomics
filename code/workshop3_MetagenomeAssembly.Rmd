@@ -3,18 +3,39 @@ title: "MB5370 Marine Genomics - Workshop 3"
 subtitle: "Metagenome Assembly"
 author: "Katie Dyck"
 date: "2026-07-09"
-output: html_document
+format:
+  html:
+      df-scroll: true
+      df-print: paged
+      css: styles.css
+      embed-resources: true
+      code-fold: show
+      code-copy: hover
+      code-block-bg: true
+      code-block-border-left: "grey25"
+      toc: true
+      number-sections: true
+      number-depth: 4
+      toc-location: left
+      toc-expand: 3
+      toc-title: Contents
+      syntax-highlighting: github
+      theme: cosmo
+      title-block-banner: true
+      fig-height: 6
+      fig-width: 10
+      fig-cap-location: bottom
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-------------------------------------------------------------------------
+::: {.callout-note icon="FALSE"}
+In this document, all yellow code chunks indicate bash (R Terminal) code input. Comments begin with `#`; these are listed for reference only, and should not be entered into the Terminal.
 
-***In this workshop, most code is UNIX code, but some is R code.***
-
-------------------------------------------------------------------------
+All other code chunks indicate R code, which should be input into the Console.
+:::
 
 In this workshop we will assemble a mock metagenome consisting of five bacterial species. This is very simple compared with a real metagenome, but has been designed to capture some key challenges that appear in metagenome assembly:
 
@@ -46,6 +67,9 @@ For the purposes of metagenomic assembly we note the number of chromosomes, tota
 Input data for this exercise consists of simulated reads from an Oxford Nanopore MinION sequencer.
 
 ```{bash raw_reads directory, eval=FALSE}
+mkdir workshop3
+cd workshop3
+
 # Make a new subdirectory, raw_reads
 mkdir raw_data
 cd raw_data
@@ -55,7 +79,7 @@ ln -s /pvol/data/metagenome_assembly/reads_R10_0.5.fastq.gz raw_reads.fastq.gz
 cd ..
 ```
 
-```{bash}
+```{bash check dir, eval=FALSE}
 ls -lR
 ```
 
@@ -69,10 +93,10 @@ zcat raw_data/raw_reads.fastq.gz | head -n 40000 | bioawk -c fastx '{print $name
 
 Now we'll create a plot to visualize these lengths.
 
-```{r}
+```{r read length data}
 library(tidyverse)
 
-rl_data <- read_tsv("../read_lengths.txt", col_names = c("id", "length"), show_col_types = FALSE)
+rl_data <- read_tsv("../workshop3/read_lengths.txt", col_names = c("id", "length"), show_col_types = FALSE)
 
 ggplot(rl_data, aes(x = length/1000)) +
   geom_histogram(binwidth = 2) +
@@ -88,7 +112,7 @@ From this plot it is clear that the majority of reads are between 1 and 50kb in 
 -   Step 2: Create a new column with the cumulative sum of read lengths (starting from longest read).
 -   Step 3: Find the read at which the cumulative sum surpasses 50% of the total read volume (ie total sum of all read lengths)
 
-```{r}
+```{r total length}
 total_len <- sum(rl_data$length)
 
 rl_data %>% 
@@ -146,23 +170,23 @@ Outputs will be available in directory `mock`. Key output files are:
 
 (*Export "assembly.fasta" file and open in Bandage to view contigs.*)
 
-![](../images/flye_assembly_graph.png)
-
-![](../images/flye_assembly_graph_labelled.png)
+```{r assembly fasta bandage fig, echo=FALSE, out.width="90%"}
+knitr::include_graphics("../workshop3/images/assembly_fasta.png")
+```
 
 **Observations**:
 
--   Largest contig (edge_31) = 4,681,059 bp; depth 21x. Looks like this contig corresponds to the genome of the most abundant species in our mock community.
--   Contig 42 could also be a genome from our mock community (1,551,213 bp; depth 15x).
--   Contig 31 and 42 are chromosomes - we know this because they are circular (i.e. connected to themselves).
--   Contig 38 must be a repeat - it has a length of only 516 bp but a depth of 789x!
--   Contig 34 is interesting: 574,744 bp with a depth of 7x.
+-   Largest contig at the top (contig 29) = 4,681,059 bp; depth 21x. Looks like this contig corresponds to the genome of the most abundant species in our mock community.
+-   Contig 2 (top left corner) could also be a genome from our mock community (3,179,384 bp; depth 15x).
+-   Contig 29 and 42 are chromosomes - we know this because they are circular (i.e. connected to themselves).
+-   Contig 38 (*tall purple contig connected to itself and contiguous 39, second row from the bottom*) must be a repeat - it has a length of only 521 bp but a depth of 769x!
+-   Contig 10 (*third row, connected to itself*) is interesting: 320,081 bp, depth 14x.
 
 ### Chromosome lengths and GC content in the reference data
 
 We want to compare the assembled contigs (from the flye output) with reference genomes from the 5 species that compromise our mock community. We will do this by *tabulating chromosome lengths and their corresponding GC content*.
 
-Make a new text file called "gc.awk" with the code in the chunk below and save it in the top level of the project directory.
+Make a new text file called "gc.awk" with the code in the chunk below and save it in the top level of the project directory (`workshop3` folder in this case).
 
 ```{bash code for "gc.awk" text file, eval=FALSE}
 # Bioawk script for calculating gc and printing name,length,size
@@ -178,14 +202,14 @@ BEGIN {
 }
 ```
 
-```{bash, eval=FALSE}
+```{bash ref genomes mock, eval=FALSE}
 # Look at reference genomes from our mock community
 ls /pvol/data/mg/refs/*.fna
 ```
 
 Use the `gc.awk` file we made to print the GC content and contig lengths for all chromosomes in these files. Use 'cat' to concatenate all the files together and then use a pipe to send their contents to our bioawk program.
 
-```{bash, eval=FALSE}
+```{bash x, eval=FALSE}
 cd ..
 cat /pvol/data/mg/refs/*.fna | bioawk -c fastx -f gc.awk
 ```
@@ -202,13 +226,13 @@ cat /pvol/data/mg/refs/*.fna | bioawk -c fastx -f gc.awk
 | CP098035.1 36224 0.485231
 | NZ_CP053351.1 4560973 0.34633
 
-In the assembly graph diagram shown above, the two circular chromosomes are for *Vibrio alfacsensis*.
+**In the assembly graph diagram above, the two circular chromosomes are for *Vibrio alfacsensis*.**
 
 ## Step 3: Basic Assembly QC
 
 Here we will print the length and GC content for our assembled contigs.
 
-```{bash, eval=FALSE}
+```{bash basic assembly QC, eval=FALSE}
 mkdir assembly_check
 cd assembly_check
 
@@ -223,14 +247,14 @@ Now we'll create some plots in R to explore the GC content and coverage depth of
 
 We have GC content in `assembly.gc.tsv` and coverage depth in the `assembly_info.txt` file produced by `flye.` Let’s read those and join them together using R.
 
-```{r, results='hide'}
+```{r gc and info, results='hide'}
 library(tidyverse)
 
-gc <- read_tsv("../assembly_check/assembly.gc.tsv",col_names = c("#seq_name","length","GC"))
-info <- read_tsv("../flye/mock/assembly_info.txt")
+gc <- read_tsv("../workshop3/assembly_check/assembly.gc.tsv",col_names = c("#seq_name","length","GC"))
+info <- read_tsv("../workshop3/flye/mock/assembly_info.txt")
 ```
 
-```{r}
+```{r join datasets}
 # join datasets as they both have a '#seq_name' column
 gc_info <- info %>%
   left_join(gc)
@@ -243,7 +267,7 @@ gc_info %>%
 
 A GC vs coverage plot helps identify clusters with similar values for both parameters.
 
-```{r}
+```{r gc info}
 gc_info %>%
   # Filter data to remove contigs with unrealistically high GC content
   filter(GC < 0.8) %>%
@@ -255,7 +279,7 @@ gc_info %>%
   labs(caption = "Only contigs with > 25x coverage and < 80% GC coverage are shown.")
 ```
 
-```{r}
+```{r contig plot with labels}
 library(ggrepel)
 
 gc_info %>% 
@@ -269,17 +293,17 @@ gc_info %>%
 
 Since our mock metagenome has a precisely known composition we can assess its completeness in a crude way simply by comparing the length of our assembly with that of the reference.
 
-```{bash, eval=FALSE}
-cd ~/workshop3_metagenomes
+```{bash cd, eval=FALSE}
+cd ..
 ```
 
 Firstly lets calculate the total length of our reference sequences. This command builds on one we ran earlier to list the size and GC content of reference chromosomes, but this time we have added another very simple awk program to take the sum of the second column.
 
-```{bash, eval=FALSE}
+```{bash assembly size, eval=FALSE}
 cat /pvol/data/mg/refs/*.fna | bioawk -c fastx -f gc.awk | awk '{sum+=$2}END{print sum}'
 ```
 
-*Total length of reference is around 24Mb.*
+**Total length of reference is around 24Mb.**
 
 In a real metagenomic assembly there is nothing to compare the total assembly length with so we don’t usually assess completeness this way. Later we will explore how to assess completeness for individual taxa within our assembly which is the common approach in real situations. For now, let’s continue to use the assembly length as a metric because this will allow us to explore the effect of sequencing volume on assembly completeness.
 
@@ -319,52 +343,50 @@ metabat2 -i assembly_ordered.fasta -a depths.txt --cvExt -o bins/metabat --seed 
 ```
 
 | MetaBAT 2 (nosha) using minContig 2500, minCV 1.0, minCVSum 1.0, maxP 95%, minS 60, maxEdges 200 and minClsSize 200000. with random seed=5
-| 7 bins (13400154 bases in total) formed.
+| 5 bins (13398550 bases in total) formed.
 
 The `bins` directory (in the metabat directory) will contain multi-fasta files with each of the bins inferred by metabat.
 
-```{bash, eval=FALSE}
+```{bash grep bins, eval=FALSE}
 # quickly inspect which contigs were grouped into which bin
 grep '>' bins/*
 ```
 
-| bins/metabat.1.fa:\>contig_27 
-| bins/metabat.1.fa:\>contig_26 
-| bins/metabat.1.fa:\>contig_37 
-| bins/metabat.2.fa:\>contig_2 
-| bins/metabat.2.fa:\>contig_24 
-| bins/metabat.2.fa:\>contig_13 
-| bins/metabat.2.fa:\>contig_44 
-| bins/metabat.3.fa:\>contig_9 
-| bins/metabat.3.fa:\>contig_16 
-| bins/metabat.3.fa:\>contig_21 
-| bins/metabat.3.fa:\>contig_35 
-| bins/metabat.3.fa:\>contig_6 
-| bins/metabat.3.fa:\>contig_15 
-| bins/metabat.3.fa:\>contig_5 
-| bins/metabat.4.fa:\>contig_33 
-| bins/metabat.4.fa:\>contig_25 
-| bins/metabat.4.fa:\>contig_11 
-| bins/metabat.4.fa:\>contig_17 
-| bins/metabat.4.fa:\>contig_7 
-| bins/metabat.4.fa:\>contig_28 
-| bins/metabat.4.fa:\>contig_1 
-| bins/metabat.4.fa:\>contig_18 
-| bins/metabat.4.fa:\>contig_30 
-| bins/metabat.4.fa:\>contig_29 
-| bins/metabat.4.fa:\>contig_41 
-| bins/metabat.4.fa:\>contig_4 
-| bins/metabat.5.fa:\>contig_22 
-| bins/metabat.5.fa:\>contig_23 
-| bins/metabat.5.fa:\>contig_19 
-| bins/metabat.6.fa:\>contig_20 
-| bins/metabat.6.fa:\>contig_34 
-| bins/metabat.7.fa:\>contig_3 
-| bins/metabat.7.fa:\>contig_42 
-| bins/metabat.7.fa:\>contig_10 
-| bins/metabat.7.fa:\>contig_43
+| bins/metabat.1.fa:\>contig_18
+| bins/metabat.1.fa:\>contig_11
+| bins/metabat.1.fa:\>contig_20
+| bins/metabat.2.fa:\>contig_8
+| bins/metabat.2.fa:\>contig_28
+| bins/metabat.2.fa:\>contig_1
+| bins/metabat.2.fa:\>contig_19
+| bins/metabat.3.fa:\>contig_31
+| bins/metabat.3.fa:\>contig_30
+| bins/metabat.3.fa:\>contig_41
+| bins/metabat.3.fa:\>contig_3
+| bins/metabat.3.fa:\>contig_5
+| bins/metabat.3.fa:\>contig_6
+| bins/metabat.3.fa:\>contig_12
+| bins/metabat.4.fa:\>contig_15
+| bins/metabat.4.fa:\>contig_25
+| bins/metabat.4.fa:\>contig_34
+| bins/metabat.4.fa:\>contig_17
+| bins/metabat.4.fa:\>contig_27
+| bins/metabat.4.fa:\>contig_26
+| bins/metabat.4.fa:\>contig_37
+| bins/metabat.4.fa:\>contig_22
+| bins/metabat.4.fa:\>contig_23
+| bins/metabat.4.fa:\>contig_33
+| bins/metabat.4.fa:\>contig_4
+| bins/metabat.4.fa:\>contig_24
+| bins/metabat.5.fa:\>contig_35
+| bins/metabat.5.fa:\>contig_16
+| bins/metabat.5.fa:\>contig_21
+| bins/metabat.6.fa:\>contig_2
+| bins/metabat.6.fa:\>contig_42
+| bins/metabat.7.fa:\>contig_10
+| bins/metabat.7.fa:\>contig_9
 
-metabat has grouped contigs into 7 bins (exact numbers can vary from run to run which is why we used the `--seed` argument). If you compare the contigs in these bins with those shown in bandage you can see that *the largest and highest coverage contig (contig_31) has not been included*. Other than this some of the other bins seem to make some sense. (For example you should see bins that contain similar groupings of contigs to those that you explored by hand using bandage + GC content and coverage.)
+metabat has grouped contigs into 7 bins (exact numbers can vary from run to run which is why we used the `--seed` argument). If you compare the contigs in these bins with those shown in bandage you can see that *the largest and highest coverage contig (contig 29) has not been included*. Other than this some of the other bins seem to make some sense. (For example you should see bins that contain similar groupings of contigs to those that you explored by hand using bandage + GC content and coverage.)
 
 ## Step 5: Check bin quality with checkM
 
@@ -376,24 +398,24 @@ We will use a program called [checkM](https://github.com/Ecogenomics/CheckM) to 
 We can assess the degree to which our binning and assembly has achieved these goals using checkM.
 
 ```{bash checkM directory, eval=FALSE}
-cd ~/workshop3_metagenomes
+cd ..
 mkdir checkm
 cd checkm
 ```
 
-```{bash}
+```{bash make bins dir, eval=FALSE}
 # prepare inputs for checkM - copy over the bins from metabat
 mkdir bins
 cp ../metabat/bins/metabat.*.fa bins/
 ```
 
-Remember that metabat failed to include our longest contig in bins (contig_31). We need to extract this contig from our assembly and include it with our metabat bins.
+Remember that metabat failed to include our longest contig in bins (contig_29). We need to extract this contig from our assembly and include it with our metabat bins.
 
-```{bash, eval=FALSE}
-samtools faidx ../flye/mock/assembly.fasta contig_31 > bins/contig_31.fa
+```{bash samtools, eval=FALSE}
+samtools faidx ../flye/mock/assembly.fasta contig_29 > bins/contig_29.fa
 ```
 
-In `checkm` directory, save a new shell script for us to run ("run_checkm.sh"). We do this because `checkm` can be very resource intensive.
+In `checkm` directory, save a new shell script for us to run (`run_checkm.sh`; code below). We do this because `checkm` can be very resource intensive.
 
 ```{bash run_checkm.sh shell script, eval=FALSE}
 #!/bin/bash
@@ -426,16 +448,16 @@ The results file, "checkm_results.txt", provides a summary of results for each o
 -   *Contamination*: estimated contamination. This is the number of marker genes appearing \>1 times divided by the total
 -   *Strain heterogeneity*: estimated strain heterogeneity. This is calculated by examining the marker genes appearing \>1 times and determining the proportion of these that are from the same or very similar organisms (strains).
 
-| Bin ID | Marker Lineage | Completeness | Contamination |
-| --- | --- | --- | --- |
-| metabat.7 | f__Vibrionaceae (UID4865) | 99.93 | 1.33 |
-| contig_31 |  p__Cyanobacteria (UID2182) | 99.87 | 0.71 |
-| metabat.6 | c__Deltaproteobacteria (UID3217) | 43.19 | 0.00 | 
-| metabat.5 | c__Deltaproteobacteria (UID3217) | 29.14 | 0.00 |
-| metabat.4 | f__Vibrionaceae (UID4865) | 19.13 | 0.00 |
-| metabat.3 | root (UID1) | 12.50 | 0.00 |
-| metabat.2 | k__Bacteria (UID203) | 9.64 | 0.00 |
-| metabat.1 | f__Vibrionaceae (UID4865) | 7.48 | 0.00 |
+| Bin ID    | Marker Lineage                     | Completeness | Contamination |
+|-----------|------------------------------------|--------------|---------------|
+| metabat.7 | f\_\_Vibrionaceae (UID4865)        | 99.93        | 1.33          |
+| contig_29 | p\_\_Cyanobacteria (UID2182)       | 99.87        | 0.71          |
+| metabat.6 | c\_\_Deltaproteobacteria (UID3217) | 43.19        | 0.00          |
+| metabat.5 | c\_\_Deltaproteobacteria (UID3217) | 29.14        | 0.00          |
+| metabat.4 | f\_\_Vibrionaceae (UID4865)        | 19.13        | 0.00          |
+| metabat.3 | root (UID1)                        | 12.50        | 0.00          |
+| metabat.2 | k\_\_Bacteria (UID203)             | 9.64         | 0.00          |
+| metabat.1 | f\_\_Vibrionaceae (UID4865)        | 7.48         | 0.00          |
 
 **Observations**
 
